@@ -222,13 +222,17 @@
       sabores.forEach(({ nombre, imagen }) => {
         const stock = inventario[nombre] ?? 0;
         const agotado = stock <= 0;
-        contenedor.innerHTML += `
-          <div class="producto ${agotado ? 'agotado' : ''}">
-            <img src="${imagen}" alt="${nombre}">
-            <h3>${nombre} - $15.00</h3>
-            ${agotado ? '<strong>AGOTADO</strong>' : `<button onclick="agregarAlCarrito('${nombre}', 15)">AÑADIR AL CARRITO</button>`}
-          </div>
-        `;
+contenedor.innerHTML += `
+  <div class="producto ${agotado ? 'agotado' : ''}" style="position: relative;">
+    <div style="position: absolute; top: 8px; left: 8px; background-color: #ffedd5; padding: 4px 8px; border-radius: 6px; font-size: 0.8em; color: #92400e; font-weight: bold;">
+      Pz disponibles: ${stock}
+    </div>
+    <img src="${imagen}" alt="${nombre}">
+    <h3>${nombre} - $15.00</h3>
+    ${agotado ? '<strong>AGOTADO</strong>' : `<button onclick="agregarAlCarrito('${nombre}', 15)">AÑADIR AL CARRITO</button>`}
+  </div>
+`;
+
       });
     }
 
