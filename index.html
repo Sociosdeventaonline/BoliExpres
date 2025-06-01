@@ -165,6 +165,12 @@
     </thead>
     <tbody id="tablaHistorialBody"></tbody>
   </table>
+
+<div id="resumenTotales" style="margin-top: 10px; text-align: right; font-weight: bold;">
+  Total productos vendidos: <span id="totalProductosVendidos">0</span><br>
+  Dinero ingresado: $<span id="dineroIngresado">0.00</span>
+</div>
+
 </div>
 
 
@@ -382,19 +388,21 @@ function finalizarPedido() {
 }
 
 
-    function iniciarSesion() {
-      const u = document.getElementById('usuario').value;
-      const c = document.getElementById('contrasena').value;
-      if (u === 'Admin1' && c === 'bolis1') {
-        localStorage.setItem('sesionActiva', '1');
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        document.getElementById('logoutContainer').style.display = 'block';
-        crearCamposInventario();
-      } else {
-        alert("Credenciales incorrectas");
-      }
-    }
+function iniciarSesion() {
+  const u = document.getElementById('usuario').value;
+  const c = document.getElementById('contrasena').value;
+  if (u === 'Admin1' && c === 'bolis1') {
+    localStorage.setItem('sesionActiva', '1');
+    document.getElementById('loginContainer').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('logoutContainer').style.display = 'block';
+    crearCamposInventario();
+    cargarHistorialVentas(); // ✅ Agrega esta línea aquí
+  } else {
+    alert("Credenciales incorrectas");
+  }
+}
+
 
 function verificarSesion() {
   // Escuchar los cambios en tiempo real desde Firebase
@@ -506,6 +514,18 @@ function guardarInventario() {
       tablaBody.innerHTML += fila;
     });
   });
+  // Calcular totales
+  let totalProductos = 0;
+  let totalDinero = 0;
+
+  Object.values(datos).forEach(v => {
+    totalProductos += v.cantidad;
+    totalDinero += v.cantidad * v.precio;
+  });
+
+  document.getElementById('totalProductosVendidos').textContent = totalProductos;
+  document.getElementById('dineroIngresado').textContent = totalDinero.toFixed(2);
+
 }
 
 function filtrarHistorial() {
@@ -517,6 +537,33 @@ function filtrarHistorial() {
   });
 }
 
+    function cargarHistorialVentas() {
+  const tablaBody = document.getElementById('tablaHistorialBody');
+  tablaBody.innerHTML = ''; // limpiar tabla
+
+  const ventasRef = firebaseRef(firebaseDB, 'historialVentas');
+  firebaseOnValue(ventasRef, snapshot => {
+    const datos = snapshot.val();
+    if (!datos) return;
+
+    Object.values(datos).forEach(v => {
+      const fila = `
+        <tr>
+          <td>${v.fecha}</td>
+          <td>${v.cliente}</td>
+          <td>${v.celular}</td>
+          <td>${v.metodo}</td>
+          <td>${v.producto}</td>
+          <td>${v.cantidad}</td>
+          <td>$${v.precio}</td>
+          <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
+        </tr>`;
+      tablaBody.innerHTML += fila;
+    });
+  });
+}
+
+    
   
   </script>
 <script type="module">
@@ -550,26 +597,6 @@ function filtrarHistorial() {
     <button onclick="pagarTransferencia()" style="margin:10px; padding:10px 20px; background:#2a9d8f; color:white; border:none; border-radius:5px;">Transferencia</button>
     <button onclick="pagarEfectivo()" style="margin:10px; padding:10px 20px; background:#4a4a4a; color:white; border:none; border-radius:5px;">Efectivo</button>
   </div>
-</div>
-
-  <div id="historialVentas" style="display:none; padding:20px;">
-  <h2>Historial de Ventas</h2>
-  <input type="text" id="filtroBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por nombre, forma de pago o fecha" style="padding:5px; width:100%; margin-bottom:10px;"/>
-  <table style="width:100%; border-collapse:collapse;">
-    <thead>
-      <tr style="background:#f0f0f0;">
-        <th>Fecha</th>
-        <th>Cliente</th>
-        <th>Celular</th>
-        <th>Forma de Pago</th>
-        <th>Producto</th>
-        <th>Cantidad</th>
-        <th>Precio</th>
-        <th>Subtotal</th>
-      </tr>
-    </thead>
-    <tbody id="tablaHistorialBody"></tbody>
-  </table>
 </div>
 
   
