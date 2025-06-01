@@ -105,6 +105,11 @@
     <button onclick="cerrarSesion()">Cerrar sesión</button>
   </div>
 
+  <div id="historialBoton" style="display:none; text-align:center; margin-top:10px;">
+  <button onclick="mostrarHistorialVentas()" style="background-color:#457b9d; color:white; padding:10px 20px; border:none; border-radius:5px;">H ventas</button>
+</div>
+
+
   <div class="admin-panel" id="adminPanel" style="display:none;">
     <h2>Panel del Vendedor</h2>
     <h3>Ventas del día</h3>
@@ -140,6 +145,28 @@
   <div class="finalizar">
     <button onclick="finalizarCompra()">Finalizar compra</button>
   </div>
+
+<!-- Sección de historial de ventas -->
+<div id="historialVentas" style="display:none; padding:20px;">
+  <h2>Historial de Ventas</h2>
+  <input type="text" id="filtroBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por nombre, forma de pago o fecha" style="padding:5px; width:100%; margin-bottom:10px;"/>
+  <table style="width:100%; border-collapse:collapse;">
+    <thead>
+      <tr style="background:#f0f0f0;">
+        <th>Fecha</th>
+        <th>Cliente</th>
+        <th>Celular</th>
+        <th>Forma de Pago</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody id="tablaHistorialBody"></tbody>
+  </table>
+</div>
+
 
   <script>
     const sabores = [
@@ -275,9 +302,26 @@ Adjunto comprobante: `;
   alert(`Número de cuenta: 4152-3138-5188-0034\nBanco: BBVA\nTitular: Christian Martin\n\nUna vez realizado el depósito, por favor envía el comprobante para validar tu compra.`);
 
 const url = `whatsapp://send?phone=529996102050&text=${encodeURIComponent(mensaje)}`;
-  window.open(url, '_blank');
+window.open(url, '_blank');
 
-  finalizarPedido();
+// Registrar venta en Firebase
+carrito.forEach(item => {
+  const venta = {
+    fecha: new Date().toLocaleString(),
+    cliente: datosCliente.nombre,
+    celular: datosCliente.celular,
+    metodo: 'Transferencia',
+    producto: item.nombre,
+    cantidad: item.cantidad,
+    precio: item.precio
+  };
+
+  const nuevaRef = firebaseRef(firebaseDB, 'historialVentas/' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+  firebaseSet(nuevaRef, venta);
+});
+
+finalizarPedido();
+
 }
 
 function pagarEfectivo() {
@@ -308,9 +352,26 @@ Total: $${total}`;
 
   alert("Perfecto, tu pedido ha sido registrado con pago en efectivo.");
 const url = `whatsapp://send?phone=529996102058&text=${encodeURIComponent(mensaje)}`;
-  window.open(url, '_blank');
+window.open(url, '_blank');
 
-  finalizarPedido();
+// Registrar venta en Firebase
+carrito.forEach(item => {
+  const venta = {
+    fecha: new Date().toLocaleString(),
+    cliente: datosCliente.nombre,
+    celular: datosCliente.celular,
+    metodo: 'Efectivo',
+    producto: item.nombre,
+    cantidad: item.cantidad,
+    precio: item.precio
+  };
+
+  const nuevaRef = firebaseRef(firebaseDB, 'historialVentas/' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+  firebaseSet(nuevaRef, venta);
+});
+
+finalizarPedido();
+
 }
 
 function finalizarPedido() {
@@ -418,6 +479,45 @@ function guardarInventario() {
       login.style.display = login.style.display === 'block' ? 'none' : 'block';
       if (login.style.display === 'block') login.scrollIntoView();
     }
+
+    function mostrarHistorialVentas() {
+  const tablaBody = document.getElementById('tablaHistorialBody');
+  tablaBody.innerHTML = ''; // limpiar antes de cargar
+
+  document.getElementById('historialVentas').style.display = 'block';
+
+  const ventasRef = firebaseRef(firebaseDB, 'historialVentas');
+  firebaseOnValue(ventasRef, snapshot => {
+    const datos = snapshot.val();
+    if (!datos) return;
+
+    Object.values(datos).forEach(v => {
+      const fila = `
+        <tr>
+          <td>${v.fecha}</td>
+          <td>${v.cliente}</td>
+          <td>${v.celular}</td>
+          <td>${v.metodo}</td>
+          <td>${v.producto}</td>
+          <td>${v.cantidad}</td>
+          <td>$${v.precio}</td>
+          <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
+        </tr>`;
+      tablaBody.innerHTML += fila;
+    });
+  });
+}
+
+function filtrarHistorial() {
+  const texto = document.getElementById('filtroBusqueda').value.toLowerCase();
+  const filas = document.querySelectorAll('#tablaHistorialBody tr');
+  filas.forEach(fila => {
+    const contenido = fila.textContent.toLowerCase();
+    fila.style.display = contenido.includes(texto) ? '' : 'none';
+  });
+}
+
+  
   </script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
@@ -451,5 +551,27 @@ function guardarInventario() {
     <button onclick="pagarEfectivo()" style="margin:10px; padding:10px 20px; background:#4a4a4a; color:white; border:none; border-radius:5px;">Efectivo</button>
   </div>
 </div>
+
+  <div id="historialVentas" style="display:none; padding:20px;">
+  <h2>Historial de Ventas</h2>
+  <input type="text" id="filtroBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por nombre, forma de pago o fecha" style="padding:5px; width:100%; margin-bottom:10px;"/>
+  <table style="width:100%; border-collapse:collapse;">
+    <thead>
+      <tr style="background:#f0f0f0;">
+        <th>Fecha</th>
+        <th>Cliente</th>
+        <th>Celular</th>
+        <th>Forma de Pago</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody id="tablaHistorialBody"></tbody>
+  </table>
+</div>
+
+  
 </body>
 </html>
