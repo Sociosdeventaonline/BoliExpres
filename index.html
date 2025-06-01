@@ -492,7 +492,7 @@ function guardarInventario() {
       if (login.style.display === 'block') login.scrollIntoView();
     }
 
-    function mostrarHistorialVentas() {
+function mostrarHistorialVentas() {
   const tablaBody = document.getElementById('tablaHistorialBody');
   tablaBody.innerHTML = ''; // limpiar antes de cargar
 
@@ -502,6 +502,9 @@ function guardarInventario() {
   firebaseOnValue(ventasRef, snapshot => {
     const datos = snapshot.val();
     if (!datos) return;
+
+    let totalProductos = 0;
+    let totalDinero = 0;
 
     Object.values(datos).forEach(v => {
       const fila = `
@@ -516,21 +519,17 @@ function guardarInventario() {
           <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
         </tr>`;
       tablaBody.innerHTML += fila;
+
+      // ✅ Sumamos totales dentro del loop
+      totalProductos += v.cantidad;
+      totalDinero += v.cantidad * v.precio;
     });
+
+    document.getElementById('totalProductosVendidos').textContent = totalProductos;
+    document.getElementById('dineroIngresado').textContent = totalDinero.toFixed(2);
   });
-  // Calcular totales
-  let totalProductos = 0;
-  let totalDinero = 0;
-
-  Object.values(datos).forEach(v => {
-    totalProductos += v.cantidad;
-    totalDinero += v.cantidad * v.precio;
-  });
-
-  document.getElementById('totalProductosVendidos').textContent = totalProductos;
-  document.getElementById('dineroIngresado').textContent = totalDinero.toFixed(2);
-
 }
+
 
 function filtrarHistorial() {
   const texto = document.getElementById('filtroBusqueda').value.toLowerCase();
