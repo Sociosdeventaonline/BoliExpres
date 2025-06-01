@@ -288,9 +288,14 @@
     }
 
     function mostrarLogin() {
-      document.getElementById('loginContainer').style.display = 'block';
-      document.getElementById('loginContainer').scrollIntoView();
-    }
+  const login = document.getElementById('loginContainer');
+  if (login.style.display === 'block') {
+    login.style.display = 'none';
+  } else {
+    login.style.display = 'block';
+    login.scrollIntoView();
+  }
+}
   </script>
 </body>
 </html>
