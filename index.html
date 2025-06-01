@@ -134,6 +134,12 @@
   <section class="productos" id="productos"></section>
 
   <section class="carrito">
+<div style="text-align: right; margin-bottom: 10px;">
+  <button onclick="finalizarCompra()" style="background: linear-gradient(to right, #f43f5e, #fb7185); color: white; padding: 12px 24px; border: none; border-radius: 30px; font-size: 1em; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s;">
+    Finalizar compra 🍧
+  </button>
+</div>
+
     <h2>Carrito</h2>
     <table>
       <thead><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr></thead>
@@ -142,9 +148,7 @@
     <div class="total">Total: $<span id="total">0.00</span></div>
   </section>
 
-  <div class="finalizar">
-    <button onclick="finalizarCompra()">Finalizar compra</button>
-  </div>
+
 
 <!-- Sección de historial de ventas -->
 <div id="historialVentas" style="display:none; padding:20px;">
