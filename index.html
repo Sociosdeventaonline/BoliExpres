@@ -88,11 +88,11 @@
   <header>
     <h1>BOLIS</h1>
     <nav>
-      <button onclick="document.getElementById('loginContainer').scrollIntoView();">Vendedor</button>
+      <button onclick="mostrarLogin()">Vendedor</button>
     </nav>
   </header>
 
-  <div class="login-container" id="loginContainer">
+  <div class="login-container" id="loginContainer" style="display:none">
     <h2>Iniciar Sesión</h2>
     <input type="text" id="usuario" placeholder="Usuario"><br><br>
     <input type="password" id="contrasena" placeholder="Contraseña"><br><br>
@@ -266,6 +266,10 @@
         cuerpo.innerHTML += `<tr><td>${v.nombre}</td><td>$${v.precio}</td><td>${v.cantidad}</td><td>$${sub.toFixed(2)}</td></tr>`;
       });
     }
-  </script>
+  function mostrarLogin() {
+  document.getElementById('loginContainer').style.display = 'block';
+  document.getElementById('loginContainer').scrollIntoView();
+}
+</script>
 </body>
 </html>
