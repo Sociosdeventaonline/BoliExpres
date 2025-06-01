@@ -29,21 +29,9 @@
       text-decoration: none;
       color: #124559;
     }
-    .banner {
+    .banner, .login-container, .admin-panel {
       text-align: center;
-      padding: 40px 20px;
-    }
-    .banner h2 {
-      font-size: 2em;
-    }
-    .banner button {
-      background-color: #124559;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
-      font-size: 1em;
-      border-radius: 5px;
+      padding: 20px;
     }
     .productos {
       padding: 20px;
@@ -66,28 +54,26 @@
       height: 100px;
       margin-bottom: 10px;
     }
-    .producto h3 {
-      text-align: center;
-      margin-bottom: 10px;
+    .agotado {
+      opacity: 0.5;
     }
-    .carrito table {
+    .carrito table, .ventas table {
       width: 100%;
       border-collapse: collapse;
     }
-    .carrito th, .carrito td {
+    th, td {
       padding: 10px;
-      text-align: left;
       border-bottom: 1px solid #ddd;
     }
-    .carrito .total {
+    .total {
       text-align: right;
       font-size: 1.2em;
     }
-    .finalizar {
+    .finalizar, .logout-btn {
       text-align: right;
       padding: 20px;
     }
-    .finalizar button {
+    button {
       background-color: #2a9d8f;
       color: white;
       padding: 10px 20px;
@@ -98,72 +84,42 @@
     }
   </style>
 </head>
-<body>
+<body onload="verificarSesion()">
   <header>
     <h1>BOLIS</h1>
     <nav>
-      <a href="#inicio">INICIO</a>
-      <a href="#nosotros">NOSOTROS</a>
-      <a href="#contacto">CONTACTO</a>
+      <button onclick="document.getElementById('loginContainer').scrollIntoView();">Vendedor</button>
     </nav>
   </header>
 
-  <section class="banner">
-    <h2>Bolis de Hielo</h2>
-    <p>Explora nuestra variedad de bolis refrescantes</p>
-    <button onclick="document.getElementById('carrito').scrollIntoView();">COMPRA AHORA</button>
-  </section>
+  <div class="login-container" id="loginContainer">
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="usuario" placeholder="Usuario"><br><br>
+    <input type="password" id="contrasena" placeholder="Contraseña"><br><br>
+    <button onclick="iniciarSesion()">Ingresar</button>
+  </div>
 
-  <section class="productos" id="productos">
-    <div class="producto">
-      <img src="fresa_con_crema.png" alt="Boli de Fresa con Crema">
-      <h3>Boli de Fresa con Crema - $15.00</h3>
-      <button onclick="agregarAlCarrito('Boli de Fresa con Crema', 15)">AÑADIR AL CARRITO</button>
-    </div>
+  <div class="logout-btn" id="logoutContainer" style="display:none">
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
 
-    <div class="producto">
-      <img src="mango_con_chamoy.png" alt="Boli de Mango con Chamoy">
-      <h3>Boli de Mango con Chamoy - $15.00</h3>
-      <button onclick="agregarAlCarrito('Boli de Mango con Chamoy', 15)">AÑADIR AL CARRITO</button>
-    </div>
+  <div class="admin-panel" id="adminPanel" style="display:none">
+    <h2>Panel del Vendedor</h2>
+    <h3>Ventas del día</h3>
+    <table id="tablaVentas">
+      <thead><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <h3>Inventario disponible</h3>
+    <div id="inventarioInputs"></div>
+  </div>
 
-    <div class="producto">
-      <img src="sandia_con_chamoy.png" alt="Boli de Sandía con Chamoy">
-      <h3>Boli de Sandía con Chamoy - $15.00</h3>
-      <button onclick="agregarAlCarrito('Boli de Sandía con Chamoy', 15)">AÑADIR AL CARRITO</button>
-    </div>
+  <section class="productos" id="productos"></section>
 
-    <div class="producto">
-      <img src="pina_con_chamoy.png" alt="Boli de Piña con Chamoy">
-      <h3>Boli de Piña con Chamoy - $15.00</h3>
-      <button onclick="agregarAlCarrito('Boli de Piña con Chamoy', 15)">AÑADIR AL CARRITO</button>
-    </div>
-
-    <div class="producto">
-      <img src="oreo.png" alt="Boli de Oreo">
-      <h3>Boli de Oreo - $15.00</h3>
-      <button onclick="agregarAlCarrito('Boli de Oreo', 15)">AÑADIR AL CARRITO</button>
-    </div>
-
-    <div class="producto">
-      <img src="Platano.png" alt="Boli de Plátano con Leche">
-      <h3>Boli de Plátano con Leche - $15.00</h3>
-      <button onclick="agregarAlCarrito('Boli de Plátano con Leche', 15)">AÑADIR AL CARRITO</button>
-    </div>
-
-    <div class="producto">
-      <img src="duvalin.png" alt="Boli de Duvalín">
-      <h3>Boli de Duvalín - $15.00</h3>
-      <button onclick="agregarAlCarrito('Boli de Duvalín', 15)">AÑADIR AL CARRITO</button>
-    </div>
-  </section>
-
-  <section id="carrito" class="carrito">
+  <section class="carrito" id="carrito">
     <h2>Carrito</h2>
     <table>
-      <thead>
-        <tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr>
-      </thead>
+      <thead><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr></thead>
       <tbody id="itemsCarrito"></tbody>
     </table>
     <div class="total">Total: $<span id="total">0.00</span></div>
@@ -174,56 +130,141 @@
   </div>
 
   <script>
+    const sabores = [
+      { nombre: 'Boli de Fresa con Crema', imagen: 'fresa_con_crema.png' },
+      { nombre: 'Boli de Mango con Chamoy', imagen: 'mango_con_chamoy.png' },
+      { nombre: 'Boli de Sandía con Chamoy', imagen: 'sandia_con_chamoy.png' },
+      { nombre: 'Boli de Piña con Chamoy', imagen: 'pina_con_chamoy.png' },
+      { nombre: 'Boli de Oreo', imagen: 'oreo.png' },
+      { nombre: 'Boli de Plátano con Leche', imagen: 'Platano.png' },
+      { nombre: 'Boli de Duvalín', imagen: 'duvalin.png' }
+    ];
+    const inventario = {};
     const carrito = [];
+    const ventas = [];
+    let timer;
+
+    function renderProductos() {
+      const contenedor = document.getElementById('productos');
+      contenedor.innerHTML = '';
+      sabores.forEach(({ nombre, imagen }) => {
+        const stock = inventario[nombre] ?? 0;
+        const agotado = stock <= 0;
+        contenedor.innerHTML += `
+          <div class="producto ${agotado ? 'agotado' : ''}">
+            <img src="${imagen}" alt="${nombre}">
+            <h3>${nombre} - $15.00</h3>
+            ${agotado ? '<strong>AGOTADO</strong>' : `<button onclick="agregarAlCarrito('${nombre}', 15)">AÑADIR AL CARRITO</button>`}
+          </div>
+        `;
+      });
+    }
 
     function agregarAlCarrito(nombre, precio) {
-      const index = carrito.findIndex(item => item.nombre === nombre);
-      if (index >= 0) {
-        carrito[index].cantidad++;
-      } else {
-        carrito.push({ nombre, precio, cantidad: 1 });
-      }
+      if (inventario[nombre] <= 0) return;
+      const index = carrito.findIndex(i => i.nombre === nombre);
+      if (index >= 0) carrito[index].cantidad++;
+      else carrito.push({ nombre, precio, cantidad: 1 });
+      inventario[nombre]--;
       actualizarCarrito();
+      renderProductos();
     }
 
     function actualizarCarrito() {
-      const itemsCarrito = document.getElementById('itemsCarrito');
+      const items = document.getElementById('itemsCarrito');
       const totalElem = document.getElementById('total');
-      itemsCarrito.innerHTML = '';
+      items.innerHTML = '';
       let total = 0;
-
-      carrito.forEach(item => {
-        const subtotal = item.precio * item.cantidad;
-        total += subtotal;
-        itemsCarrito.innerHTML += `
-          <tr>
-            <td>${item.nombre}</td>
-            <td>$${item.precio.toFixed(2)}</td>
-            <td>${item.cantidad}</td>
-            <td>$${subtotal.toFixed(2)}</td>
-          </tr>
-        `;
+      carrito.forEach(i => {
+        const sub = i.precio * i.cantidad;
+        total += sub;
+        items.innerHTML += `<tr><td>${i.nombre}</td><td>$${i.precio}</td><td>${i.cantidad}</td><td>$${sub.toFixed(2)}</td></tr>`;
       });
-
       totalElem.textContent = total.toFixed(2);
     }
 
     function finalizarCompra() {
       const nombre = prompt("¿Cuál es tu nombre?");
       const celular = prompt("¿Cuál es tu número de celular?");
-      if (!nombre || !celular) {
-        alert("Por favor completa todos los datos.");
-        return;
-      }
-
-      let mensaje = `Hola, soy ${nombre}. Mi número es ${celular} y quiero pedir:\\n`;
-      carrito.forEach(item => {
-        mensaje += `- ${item.cantidad} x ${item.nombre} ($${item.precio})\\n`;
+      if (!nombre || !celular) return alert("Faltan datos");
+      let mensaje = `Hola, soy ${nombre}. Mi número es ${celular} y quiero pedir:\n`;
+      carrito.forEach(i => {
+        mensaje += `- ${i.cantidad} x ${i.nombre} ($${i.precio})\n`;
+        ventas.push(i);
       });
       mensaje += `Total: $${document.getElementById('total').textContent}`;
-
+      actualizarVentas();
+      carrito.length = 0;
+      actualizarCarrito();
       const url = `https://wa.me/529996102058?text=${encodeURIComponent(mensaje)}`;
       window.location.href = url;
+    }
+
+    function iniciarSesion() {
+      const u = document.getElementById('usuario').value;
+      const c = document.getElementById('contrasena').value;
+      if (u === 'Admin1' && c === 'bolis1') {
+        localStorage.setItem('sesionActiva', '1');
+        localStorage.setItem('ultimoMovimiento', Date.now());
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('logoutContainer').style.display = 'block';
+        iniciarTemporizador();
+        crearCamposInventario();
+        renderProductos();
+      } else {
+        alert("Credenciales incorrectas");
+      }
+    }
+
+    function verificarSesion() {
+      if (localStorage.getItem('sesionActiva') === '1') {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('logoutContainer').style.display = 'block';
+        iniciarTemporizador();
+        crearCamposInventario();
+        renderProductos();
+      }
+    }
+
+    function iniciarTemporizador() {
+      document.body.addEventListener('click', () => localStorage.setItem('ultimoMovimiento', Date.now()));
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (Date.now() - localStorage.getItem('ultimoMovimiento') > 300000) cerrarSesion();
+      }, 60000);
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('sesionActiva');
+      localStorage.removeItem('ultimoMovimiento');
+      document.getElementById('loginContainer').style.display = 'block';
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('logoutContainer').style.display = 'none';
+    }
+
+    function crearCamposInventario() {
+      const inv = document.getElementById('inventarioInputs');
+      inv.innerHTML = '';
+      sabores.forEach(({ nombre }) => {
+        inventario[nombre] = inventario[nombre] ?? 0;
+        inv.innerHTML += `${nombre}: <input type='number' min='0' value='${inventario[nombre]}' onchange='actualizarStock("${nombre}", this.value)'><br>`;
+      });
+    }
+
+    function actualizarStock(nombre, valor) {
+      inventario[nombre] = parseInt(valor);
+      renderProductos();
+    }
+
+    function actualizarVentas() {
+      const cuerpo = document.querySelector('#tablaVentas tbody');
+      cuerpo.innerHTML = '';
+      ventas.forEach(v => {
+        const sub = v.precio * v.cantidad;
+        cuerpo.innerHTML += `<tr><td>${v.nombre}</td><td>$${v.precio}</td><td>${v.cantidad}</td><td>$${sub.toFixed(2)}</td></tr>`;
+      });
     }
   </script>
 </body>
