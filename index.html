@@ -272,6 +272,13 @@
     }
 
     function crearCamposInventario() {
+  const datosGuardados = localStorage.getItem('inventarioBolis');
+  if (datosGuardados) {
+    const inventarioGuardado = JSON.parse(datosGuardados);
+    Object.keys(inventarioGuardado).forEach(nombre => {
+      inventario[nombre] = inventarioGuardado[nombre];
+    });
+  }
       const inv = document.getElementById('inventarioInputs');
       inv.innerHTML = '';
       sabores.forEach(({ nombre }) => {
@@ -281,10 +288,13 @@
     }
 
     function guardarInventario() {
-      document.querySelectorAll('#inventarioInputs input').forEach(input => {
-        const nombre = input.dataset.nombre;
-        inventario[nombre] = parseInt(input.value) || 0;
-      });
+  document.querySelectorAll('#inventarioInputs input').forEach(input => {
+    const nombre = input.dataset.nombre;
+    inventario[nombre] = parseInt(input.value) || 0;
+  });
+  localStorage.setItem('inventarioBolis', JSON.stringify(inventario));
+  renderProductos();
+});
       renderProductos();
     }
 
@@ -309,4 +319,3 @@
   </script>
 </body>
 </html>
-
