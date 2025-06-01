@@ -20,6 +20,11 @@
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
+.tabla-responsive {
+  overflow-x: auto;
+  width: 100%;
+}
+   
     header {
       background-color: #ffffff;
       padding: 20px;
@@ -141,21 +146,31 @@
 
   <section class="productos" id="productos"></section>
 
-  <section class="carrito">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
-  <button onclick="finalizarCompra()" style="background: linear-gradient(to right, #f43f5e, #fb7185); color: white; padding: 12px 24px; border: none; border-radius: 30px; font-size: 1em; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s;">
-    Finalizar compra 🍧
-  </button>
-  <div class="total" style="font-weight: bold; font-size: 1.2em;">Total: $<span id="total">0.00</span></div>
-</div>
+<section class="carrito">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+    <button onclick="finalizarCompra()" style="background: linear-gradient(to right, #f43f5e, #fb7185); color: white; padding: 12px 24px; border: none; border-radius: 30px; font-size: 1em; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s;">
+      Finalizar compra 🍧
+    </button>
+    <div class="total" style="font-weight: bold; font-size: 1.2em;">Total: $<span id="total">0.00</span></div>
+  </div>
 
-
-    <h2>Carrito</h2>
+  <h2>Carrito</h2>
+  <div class="tabla-responsive">
     <table>
-      <thead><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>Subtotal</th>
+          <th></th> <!-- para el botón eliminar -->
+        </tr>
+      </thead>
       <tbody id="itemsCarrito"></tbody>
     </table>
-  </section>
+  </div>
+</section>
+
 
 
 
