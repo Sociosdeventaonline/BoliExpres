@@ -398,6 +398,8 @@ function iniciarSesion() {
     document.getElementById('logoutContainer').style.display = 'block';
     crearCamposInventario();
     cargarHistorialVentas(); // ✅ Agrega esta línea aquí
+    document.getElementById('historialBoton').style.display = 'block';
+
   } else {
     alert("Credenciales incorrectas");
   }
@@ -415,6 +417,8 @@ function verificarSesion() {
       renderProductos();
       if (localStorage.getItem('sesionActiva') === '1') {
         crearCamposInventario(); // Para que los inputs se sincronicen con los nuevos datos
+        document.getElementById('historialBoton').style.display = 'block';
+
       }
       localStorage.setItem('inventarioBolis', JSON.stringify(inventario)); // respaldo local
     }
