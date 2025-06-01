@@ -272,9 +272,9 @@ ${detallePedido}
 Total: $${total}
 Adjunto comprobante: `;
 
-  alert(`Número de cuenta: 4152313851880034\nBanco: BBVA\nTitular: Christian Martin\n\nUna vez realizado el depósito, por favor envía el comprobante para validar tu compra.`);
+  alert(`Número de cuenta: 4152-3138-5188-0034\nBanco: BBVA\nTitular: Christian Martin\n\nUna vez realizado el depósito, por favor envía el comprobante para validar tu compra.`);
 
-  const url = `https://wa.me/529996102050?text=${encodeURIComponent(mensaje)}`;
+const url = `whatsapp://send?phone=529996102050&text=${encodeURIComponent(mensaje)}`;
   window.open(url, '_blank');
 
   finalizarPedido();
@@ -307,7 +307,7 @@ ${detallePedido}
 Total: $${total}`;
 
   alert("Perfecto, tu pedido ha sido registrado con pago en efectivo.");
-  const url = `https://wa.me/529996102058?text=${encodeURIComponent(mensaje)}`;
+const url = `whatsapp://send?phone=529996102058&text=${encodeURIComponent(mensaje)}`;
   window.open(url, '_blank');
 
   finalizarPedido();
