@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BOLIS - Tienda de Bolis de Hielo</title>
   <style>
     body {
@@ -24,18 +24,16 @@
       margin: 0;
       color: #124559;
     }
-    nav a, nav button {
-      margin-left: 15px;
-      text-decoration: none;
-      color: #124559;
+    nav button {
       background-color: #2a9d8f;
+      color: white;
       border: none;
       padding: 10px 20px;
       border-radius: 5px;
-      cursor: pointer;
       font-size: 1em;
+      cursor: pointer;
     }
-    .banner, .login-container, .admin-panel {
+    .login-container, .admin-panel {
       text-align: center;
       padding: 20px;
     }
@@ -63,7 +61,7 @@
     .agotado {
       opacity: 0.5;
     }
-    .carrito table, .ventas table {
+    table {
       width: 100%;
       border-collapse: collapse;
     }
@@ -79,15 +77,6 @@
       text-align: right;
       padding: 20px;
     }
-    button {
-      background-color: #2a9d8f;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
-      font-size: 1em;
-      border-radius: 5px;
-    }
     #inventarioInputs {
       display: flex;
       flex-direction: column;
@@ -95,33 +84,28 @@
       gap: 10px;
       margin-top: 10px;
     }
-    .inventario-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
   </style>
 </head>
-<body onload="verificarSesion(); renderProductos();">
+<body onload="verificarSesion()">
   <header>
     <h1>BOLIS</h1>
     <nav>
-      <button onclick="mostrarLogin()">Vendedor</button>
+      <button onclick="toggleLogin()">Vendedor</button>
     </nav>
   </header>
 
-  <div class="login-container" id="loginContainer" style="display:none">
+  <div class="login-container" id="loginContainer" style="display:none;">
     <h2>Iniciar Sesión</h2>
     <input type="text" id="usuario" placeholder="Usuario"><br><br>
     <input type="password" id="contrasena" placeholder="Contraseña"><br><br>
     <button onclick="iniciarSesion()">Ingresar</button>
   </div>
 
-  <div class="logout-btn" id="logoutContainer" style="display:none">
+  <div class="logout-btn" id="logoutContainer" style="display:none;">
     <button onclick="cerrarSesion()">Cerrar sesión</button>
   </div>
 
-  <div class="admin-panel" id="adminPanel" style="display:none">
+  <div class="admin-panel" id="adminPanel" style="display:none;">
     <h2>Panel del Vendedor</h2>
     <h3>Ventas del día</h3>
     <table id="tablaVentas">
@@ -133,11 +117,9 @@
     <button onclick="guardarInventario()">Guardar inventario</button>
   </div>
 
-  <section class="productos" id="productos">
-  
-  </section>
+  <section class="productos" id="productos"></section>
 
-  <section class="carrito" id="carrito">
+  <section class="carrito">
     <h2>Carrito</h2>
     <table>
       <thead><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr></thead>
@@ -163,7 +145,6 @@
     const inventario = {};
     const carrito = [];
     const ventas = [];
-    let timer;
 
     function renderProductos() {
       const contenedor = document.getElementById('productos');
@@ -208,6 +189,7 @@
       const nombre = prompt("¿Cuál es tu nombre?");
       const celular = prompt("¿Cuál es tu número de celular?");
       if (!nombre || !celular) return alert("Faltan datos");
+
       let mensaje = `Hola, soy ${nombre}. Mi número es ${celular} y quiero pedir:\n`;
       carrito.forEach(i => {
         mensaje += `- ${i.cantidad} x ${i.nombre} ($${i.precio})\n`;
@@ -226,11 +208,9 @@
       const c = document.getElementById('contrasena').value;
       if (u === 'Admin1' && c === 'bolis1') {
         localStorage.setItem('sesionActiva', '1');
-        localStorage.setItem('ultimoMovimiento', Date.now());
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
         document.getElementById('logoutContainer').style.display = 'block';
-        iniciarTemporizador();
         crearCamposInventario();
       } else {
         alert("Credenciales incorrectas");
@@ -238,64 +218,44 @@
     }
 
     function verificarSesion() {
-  const datosGuardados = localStorage.getItem('inventarioBolis');
-  if (datosGuardados) {
-    const inventarioGuardado = JSON.parse(datosGuardados);
-    Object.keys(inventarioGuardado).forEach(nombre => {
-      inventario[nombre] = inventarioGuardado[nombre];
-    });
-  }
-  renderProductos();
-  if (localStorage.getItem('sesionActiva') === '1') {
-    document.getElementById('loginContainer').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    document.getElementById('logoutContainer').style.display = 'block';
-    iniciarTemporizador();
-    crearCamposInventario();
-  }
-}
-    }
-
-    function iniciarTemporizador() {
-      document.body.addEventListener('click', () => localStorage.setItem('ultimoMovimiento', Date.now()));
-      clearInterval(timer);
-      timer = setInterval(() => {
-        if (Date.now() - localStorage.getItem('ultimoMovimiento') > 300000) cerrarSesion();
-      }, 60000);
+      const datosGuardados = localStorage.getItem('inventarioBolis');
+      if (datosGuardados) {
+        const inventarioGuardado = JSON.parse(datosGuardados);
+        Object.keys(inventarioGuardado).forEach(nombre => {
+          inventario[nombre] = inventarioGuardado[nombre];
+        });
+      }
+      renderProductos();
+      if (localStorage.getItem('sesionActiva') === '1') {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('logoutContainer').style.display = 'block';
+        crearCamposInventario();
+      }
     }
 
     function cerrarSesion() {
       localStorage.removeItem('sesionActiva');
-      localStorage.removeItem('ultimoMovimiento');
       document.getElementById('loginContainer').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'none';
       document.getElementById('logoutContainer').style.display = 'none';
     }
 
     function crearCamposInventario() {
-  const datosGuardados = localStorage.getItem('inventarioBolis');
-  if (datosGuardados) {
-    const inventarioGuardado = JSON.parse(datosGuardados);
-    Object.keys(inventarioGuardado).forEach(nombre => {
-      inventario[nombre] = inventarioGuardado[nombre];
-    });
-  }
       const inv = document.getElementById('inventarioInputs');
       inv.innerHTML = '';
       sabores.forEach(({ nombre }) => {
         inventario[nombre] = inventario[nombre] ?? 0;
-        inv.innerHTML += `<div class="inventario-item">${nombre}: <input type='number' min='0' value='${inventario[nombre]}' data-nombre='${nombre}'></div>`;
+        inv.innerHTML += `<label>${nombre}: <input type="number" data-nombre="${nombre}" value="${inventario[nombre]}"></label>`;
       });
     }
 
     function guardarInventario() {
-  document.querySelectorAll('#inventarioInputs input').forEach(input => {
-    const nombre = input.dataset.nombre;
-    inventario[nombre] = parseInt(input.value) || 0;
-  });
-  localStorage.setItem('inventarioBolis', JSON.stringify(inventario));
-  renderProductos();
-});
+      document.querySelectorAll('#inventarioInputs input').forEach(input => {
+        const nombre = input.dataset.nombre;
+        inventario[nombre] = parseInt(input.value) || 0;
+      });
+      localStorage.setItem('inventarioBolis', JSON.stringify(inventario));
       renderProductos();
     }
 
@@ -308,15 +268,11 @@
       });
     }
 
-    function mostrarLogin() {
-  const login = document.getElementById('loginContainer');
-  if (login.style.display === 'block') {
-    login.style.display = 'none';
-  } else {
-    login.style.display = 'block';
-    login.scrollIntoView();
-  }
-}
+    function toggleLogin() {
+      const login = document.getElementById('loginContainer');
+      login.style.display = login.style.display === 'block' ? 'none' : 'block';
+      if (login.style.display === 'block') login.scrollIntoView();
+    }
   </script>
 </body>
 </html>
