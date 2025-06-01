@@ -171,7 +171,7 @@
       actualizarCarrito();
       renderProductos();
     }
-
+localStorage.setItem('carritoBolis', JSON.stringify(carrito));
     function actualizarCarrito() {
       const items = document.getElementById('itemsCarrito');
       const totalElem = document.getElementById('total');
@@ -198,6 +198,7 @@
       mensaje += `Total: $${document.getElementById('total').textContent}`;
       actualizarVentas();
       carrito.length = 0;
+      localStorage.removeItem('carritoBolis');
       actualizarCarrito();
       const url = `https://wa.me/529996102058?text=${encodeURIComponent(mensaje)}`;
       window.location.href = url;
@@ -225,7 +226,13 @@
           inventario[nombre] = inventarioGuardado[nombre];
         });
       }
-      renderProductos();
+const carritoGuardado = localStorage.getItem('carritoBolis');
+if (carritoGuardado) {
+  const datos = JSON.parse(carritoGuardado);
+  datos.forEach(item => carrito.push(item));
+  actualizarCarrito();
+}      
+renderProductos();
       if (localStorage.getItem('sesionActiva') === '1') {
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
