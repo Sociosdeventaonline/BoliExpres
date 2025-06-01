@@ -134,16 +134,8 @@
   </div>
 
   <section class="productos" id="productos">
-  <div style="text-align: center; margin-bottom: 30px;">
-  <h2>Bolis de Hielo</h2>
-  <p><em>Explora nuestra variedad de bolis refrescantes</em></p>
-  <p><strong>Instrucciones:</strong> Selecciona el sabor que deseas, agrégalo al carrito y finaliza tu compra enviando tu pedido por WhatsApp.</p>
-</div>
-  <div style="text-align: center; margin-bottom: 30px;">
-    <h2>Bolis de Hielo</h2>
-    <p><em>Explora nuestra variedad de bolis refrescantes</em></p>
-    <p><strong>Instrucciones:</strong> Selecciona el sabor que deseas, agrégalo al carrito y finaliza tu compra enviando tu pedido por WhatsApp.</p>
-  </div></section>
+  
+  </section>
 
   <section class="carrito" id="carrito">
     <h2>Carrito</h2>
@@ -246,13 +238,22 @@
     }
 
     function verificarSesion() {
-      if (localStorage.getItem('sesionActiva') === '1') {
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        document.getElementById('logoutContainer').style.display = 'block';
-        iniciarTemporizador();
-        crearCamposInventario();
-      }
+  const datosGuardados = localStorage.getItem('inventarioBolis');
+  if (datosGuardados) {
+    const inventarioGuardado = JSON.parse(datosGuardados);
+    Object.keys(inventarioGuardado).forEach(nombre => {
+      inventario[nombre] = inventarioGuardado[nombre];
+    });
+  }
+  renderProductos();
+  if (localStorage.getItem('sesionActiva') === '1') {
+    document.getElementById('loginContainer').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('logoutContainer').style.display = 'block';
+    iniciarTemporizador();
+    crearCamposInventario();
+  }
+}
     }
 
     function iniciarTemporizador() {
