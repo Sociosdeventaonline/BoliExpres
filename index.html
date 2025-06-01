@@ -114,7 +114,7 @@
     <button onclick="document.getElementById('carrito').scrollIntoView();">COMPRA AHORA</button>
   </section>
 
-  <section class="productos">
+  <section class="productos" id="productos">
     <div class="producto">
       <img src="fresa_con_crema.png" alt="Boli de Fresa con Crema">
       <h3>Boli de Fresa con Crema - $15.00</h3>
@@ -164,14 +164,13 @@
       <thead>
         <tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr>
       </thead>
-      <tbody id="itemsCarrito">
-      </tbody>
+      <tbody id="itemsCarrito"></tbody>
     </table>
     <div class="total">Total: $<span id="total">0.00</span></div>
   </section>
 
   <div class="finalizar">
-    <button onclick="alert('Compra finalizada. ¡Gracias!')">Finalizar compra</button>
+    <button onclick="finalizarCompra()">Finalizar compra</button>
   </div>
 
   <script>
@@ -207,6 +206,24 @@
       });
 
       totalElem.textContent = total.toFixed(2);
+    }
+
+    function finalizarCompra() {
+      const nombre = prompt("¿Cuál es tu nombre?");
+      const celular = prompt("¿Cuál es tu número de celular?");
+      if (!nombre || !celular) {
+        alert("Por favor completa todos los datos.");
+        return;
+      }
+
+      let mensaje = `Hola, soy ${nombre}. Mi número es ${celular} y quiero pedir:\\n`;
+      carrito.forEach(item => {
+        mensaje += `- ${item.cantidad} x ${item.nombre} ($${item.precio})\\n`;
+      });
+      mensaje += `Total: $${document.getElementById('total').textContent}`;
+
+      const url = `https://wa.me/529996102058?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
     }
   </script>
 </body>
