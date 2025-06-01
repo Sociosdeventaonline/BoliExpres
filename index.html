@@ -187,42 +187,58 @@
       totalElem.textContent = total.toFixed(2);
     }
 
-    function finalizarCompra() {
-      const nombre = prompt("¿Cuál es tu nombre?");
-      const celular = prompt("¿Cuál es tu número de celular?");
-      if (!nombre || !celular) return alert("Faltan datos");
+function finalizarCompra() {
+  const nombre = prompt("¿Cuál es tu nombre completo?");
+  const celular = prompt("¿Cuál es tu número de contacto?");
+  if (!nombre || !celular) {
+    alert("Por favor ingresa tu nombre y número.");
+    return;
+  }
 
-      let mensaje = `Hola, soy ${nombre}. Mi número es ${celular} y quiero pedir:\n`;
-carrito.forEach(i => {
-  mensaje += `- ${i.cantidad} x ${i.nombre} ($${i.precio})\n`;
-  ventas.push(i);
+  const metodo = confirm("¿Quieres pagar por transferencia?\n\nPresiona 'Aceptar' para Transferencia\nPresiona 'Cancelar' para Efectivo");
 
-  // Descontar inventario en Firebase
-  const refItem = firebaseRef(firebaseDB, `inventario/${i.nombre}`);
-  firebaseGet(refItem).then(snapshot => {
-    if (snapshot.exists()) {
-      const actual = parseInt(snapshot.val()) || 0;
-      const nuevoStock = Math.max(0, actual - i.cantidad);
+  let mensajePedido = `Hola, soy ${nombre}, este es mi número: ${celular}\nHe realizado una compra y quiero pagar `;
+  let detallePedido = '';
+  carrito.forEach(i => {
+    detallePedido += `- ${i.cantidad} x ${i.nombre} ($${i.precio})\n`;
 
-      // ✅ Aquí agregas esta línea para actualizar el inventario local
-      inventario[i.nombre] = nuevoStock;
-
-      // 🔄 Actualización correcta en Firebase
-      firebaseUpdate(firebaseRef(firebaseDB), {
-        [`inventario/${i.nombre}`]: nuevoStock
-      });
-    }
+    // Descuento de inventario en Firebase
+    const refItem = firebaseRef(firebaseDB, `inventario/${i.nombre}`);
+    firebaseGet(refItem).then(snapshot => {
+      if (snapshot.exists()) {
+        const actual = parseInt(snapshot.val()) || 0;
+        const nuevoStock = Math.max(0, actual - i.cantidad);
+        inventario[i.nombre] = nuevoStock;
+        firebaseUpdate(firebaseRef(firebaseDB), {
+          [`inventario/${i.nombre}`]: nuevoStock
+        });
+      }
+    });
   });
-});
+  const total = document.getElementById('total').textContent;
 
-      mensaje += `Total: $${document.getElementById('total').textContent}`;
-      actualizarVentas();
-      carrito.length = 0;
-      localStorage.removeItem('carritoBolis');
-      actualizarCarrito();
-      const url = `https://wa.me/529996102058?text=${encodeURIComponent(mensaje)}`;
-      window.location.href = url;
-    }
+  if (metodo) {
+    // Pago por transferencia
+    const info = `Número de cuenta: 4152313851880034\nBanco: BBVA\nTitular: Christian Martin`;
+    alert(`${info}\n\nUna vez realizado el depósito, por favor envía el comprobante para validar tu compra.`);
+
+    const mensaje = `${mensajePedido}por transferencia.\n${detallePedido}\nTotal: $${total}\nAdjunto comprobante: `;
+    const url = `https://wa.me/529996102050?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
+  } else {
+    // Pago en efectivo
+    alert("Perfecto, tu pedido ha sido registrado con pago en efectivo.");
+    const mensaje = `${mensajePedido}en efectivo.\n${detallePedido}\nTotal: $${total}`;
+    const url = `https://wa.me/529996102058?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
+  }
+
+  actualizarVentas();
+  carrito.length = 0;
+  localStorage.removeItem('carritoBolis');
+  actualizarCarrito();
+}
+
 
     function iniciarSesion() {
       const u = document.getElementById('usuario').value;
