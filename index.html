@@ -198,15 +198,17 @@
     ventas.push(i);
 
     // Descontar inventario en Firebase
-    const refItem = firebaseRef(firebaseDB, `inventario/${i.nombre}`);
-    firebaseGet(refItem).then(snapshot => {
-      if (snapshot.exists()) {
-        const actual = snapshot.val();
-        const nuevoStock = Math.max(0, actual - i.cantidad);
-        firebaseSet(refItem, nuevoStock);
-      }
+const refItem = firebaseRef(firebaseDB, `inventario/${i.nombre}`);
+firebaseGet(refItem).then(snapshot => {
+  if (snapshot.exists()) {
+    const actual = parseInt(snapshot.val()) || 0;
+    const nuevoStock = Math.max(0, actual - i.cantidad);
+    firebaseUpdate(firebaseDB, {
+      [`inventario/${i.nombre}`]: nuevoStock
     });
-  });
+  }
+});
+
 
       mensaje += `Total: $${document.getElementById('total').textContent}`;
       actualizarVentas();
