@@ -223,7 +223,7 @@
       mensaje += `Total: $${document.getElementById('total').textContent}`;
 
       const url = `https://wa.me/529996102058?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
+      window.location.href = url;
     }
   </script>
 </body>
