@@ -170,8 +170,10 @@
       inventario[nombre]--;
       actualizarCarrito();
       renderProductos();
-    }
-localStorage.setItem('carritoBolis', JSON.stringify(carrito));
+
+  // Guarda después de actualizar
+  localStorage.setItem('carritoBolis', JSON.stringify(carrito));
+}
     function actualizarCarrito() {
       const items = document.getElementById('itemsCarrito');
       const totalElem = document.getElementById('total');
@@ -191,10 +193,21 @@ localStorage.setItem('carritoBolis', JSON.stringify(carrito));
       if (!nombre || !celular) return alert("Faltan datos");
 
       let mensaje = `Hola, soy ${nombre}. Mi número es ${celular} y quiero pedir:\n`;
-      carrito.forEach(i => {
-        mensaje += `- ${i.cantidad} x ${i.nombre} ($${i.precio})\n`;
-        ventas.push(i);
-      });
+  carrito.forEach(i => {
+    mensaje += `- ${i.cantidad} x ${i.nombre} ($${i.precio})\n`;
+    ventas.push(i);
+
+    // Descontar inventario en Firebase
+    const refItem = firebaseRef(firebaseDB, `inventario/${i.nombre}`);
+    firebaseGet(refItem).then(snapshot => {
+      if (snapshot.exists()) {
+        const actual = snapshot.val();
+        const nuevoStock = Math.max(0, actual - i.cantidad);
+        firebaseSet(refItem, nuevoStock);
+      }
+    });
+  });
+
       mensaje += `Total: $${document.getElementById('total').textContent}`;
       actualizarVentas();
       carrito.length = 0;
@@ -218,28 +231,38 @@ localStorage.setItem('carritoBolis', JSON.stringify(carrito));
       }
     }
 
-    function verificarSesion() {
-      const datosGuardados = localStorage.getItem('inventarioBolis');
-      if (datosGuardados) {
-        const inventarioGuardado = JSON.parse(datosGuardados);
-        Object.keys(inventarioGuardado).forEach(nombre => {
-          inventario[nombre] = inventarioGuardado[nombre];
-        });
-      }
-const carritoGuardado = localStorage.getItem('carritoBolis');
-if (carritoGuardado) {
-  const datos = JSON.parse(carritoGuardado);
-  datos.forEach(item => carrito.push(item));
-  actualizarCarrito();
-}      
-renderProductos();
+function verificarSesion() {
+  // Escuchar los cambios en tiempo real desde Firebase
+  firebaseOnValue(firebaseRef(firebaseDB, 'inventario'), (snapshot) => {
+    const datosFirebase = snapshot.val();
+    if (datosFirebase) {
+      Object.keys(datosFirebase).forEach(nombre => {
+        inventario[nombre] = datosFirebase[nombre];
+      });
+      renderProductos();
       if (localStorage.getItem('sesionActiva') === '1') {
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        document.getElementById('logoutContainer').style.display = 'block';
-        crearCamposInventario();
+        crearCamposInventario(); // Para que los inputs se sincronicen con los nuevos datos
       }
+      localStorage.setItem('inventarioBolis', JSON.stringify(inventario)); // respaldo local
     }
+  });
+
+  const carritoGuardado = localStorage.getItem('carritoBolis');
+  if (carritoGuardado) {
+    const datos = JSON.parse(carritoGuardado);
+    datos.forEach(item => carrito.push(item));
+    actualizarCarrito();
+  }
+
+  if (localStorage.getItem('sesionActiva') === '1') {
+    document.getElementById('loginContainer').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('logoutContainer').style.display = 'block';
+    crearCamposInventario();
+  }
+
+  renderProductos();
+}
 
     function cerrarSesion() {
       localStorage.removeItem('sesionActiva');
@@ -257,14 +280,25 @@ renderProductos();
       });
     }
 
-    function guardarInventario() {
-      document.querySelectorAll('#inventarioInputs input').forEach(input => {
-        const nombre = input.dataset.nombre;
-        inventario[nombre] = parseInt(input.value) || 0;
-      });
-      localStorage.setItem('inventarioBolis', JSON.stringify(inventario));
-      renderProductos();
-    }
+function guardarInventario() {
+  document.querySelectorAll('#inventarioInputs input').forEach(input => {
+    const nombre = input.dataset.nombre;
+    inventario[nombre] = parseInt(input.value) || 0;
+  });
+
+  // Guardar en Firebase
+  firebaseSet(firebaseRef(firebaseDB, 'inventario'), inventario)
+    .then(() => {
+      console.log("Inventario guardado en Firebase");
+    })
+    .catch((error) => {
+      console.error("Error al guardar en Firebase:", error);
+    });
+
+  // También seguir usando localStorage (por seguridad local)
+  localStorage.setItem('inventarioBolis', JSON.stringify(inventario));
+  renderProductos();
+}
 
     function actualizarVentas() {
       const cuerpo = document.querySelector('#tablaVentas tbody');
@@ -281,5 +315,29 @@ renderProductos();
       if (login.style.display === 'block') login.scrollIntoView();
     }
   </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAnV23rp76MHbkDj1ABueo4JjwcEYBIABo",
+    authDomain: "bolis-d62c6.firebaseapp.com",
+    projectId: "bolis-d62c6",
+    storageBucket: "bolis-d62c6.firebasestorage.app",
+    messagingSenderId: "612127107528",
+    appId: "1:612127107528:web:f8d72ce368f2a6a7b9f8fd",
+    measurementId: "G-WR9Z2MGGXV"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.firebaseDB = db;
+  window.firebaseRef = ref;
+  window.firebaseSet = set;
+  window.firebaseGet = get;
+  window.firebaseOnValue = onValue;
+  window.firebaseUpdate = update;
+</script>
 </body>
 </html>
