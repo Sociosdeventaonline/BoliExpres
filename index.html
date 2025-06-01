@@ -279,51 +279,6 @@ function finalizarPedido() {
 }
 
 
-  const metodo = confirm("¿Quieres pagar por transferencia?\n\nPresiona 'Aceptar' para Transferencia\nPresiona 'Cancelar' para Efectivo");
-
-  let mensajePedido = `Hola, soy ${nombre}, este es mi número: ${celular}\nHe realizado una compra y quiero pagar `;
-  let detallePedido = '';
-  carrito.forEach(i => {
-    detallePedido += `- ${i.cantidad} x ${i.nombre} ($${i.precio})\n`;
-
-    // Descuento de inventario en Firebase
-    const refItem = firebaseRef(firebaseDB, `inventario/${i.nombre}`);
-    firebaseGet(refItem).then(snapshot => {
-      if (snapshot.exists()) {
-        const actual = parseInt(snapshot.val()) || 0;
-        const nuevoStock = Math.max(0, actual - i.cantidad);
-        inventario[i.nombre] = nuevoStock;
-        firebaseUpdate(firebaseRef(firebaseDB), {
-          [`inventario/${i.nombre}`]: nuevoStock
-        });
-      }
-    });
-  });
-  const total = document.getElementById('total').textContent;
-
-  if (metodo) {
-    // Pago por transferencia
-    const info = `Número de cuenta: 4152313851880034\nBanco: BBVA\nTitular: Christian Martin`;
-    alert(`${info}\n\nUna vez realizado el depósito, por favor envía el comprobante para validar tu compra.`);
-
-    const mensaje = `${mensajePedido}por transferencia.\n${detallePedido}\nTotal: $${total}\nAdjunto comprobante: `;
-    const url = `https://wa.me/529996102050?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, '_blank');
-  } else {
-    // Pago en efectivo
-    alert("Perfecto, tu pedido ha sido registrado con pago en efectivo.");
-    const mensaje = `${mensajePedido}en efectivo.\n${detallePedido}\nTotal: $${total}`;
-    const url = `https://wa.me/529996102058?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, '_blank');
-  }
-
-  actualizarVentas();
-  carrito.length = 0;
-  localStorage.removeItem('carritoBolis');
-  actualizarCarrito();
-}
-
-
     function iniciarSesion() {
       const u = document.getElementById('usuario').value;
       const c = document.getElementById('contrasena').value;
