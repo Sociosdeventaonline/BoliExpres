@@ -45,17 +45,30 @@
       font-size: 1em;
       border-radius: 5px;
     }
-    .productos, .carrito {
+    .productos {
       padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
     }
     .producto {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      margin-bottom: 20px;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      width: 200px;
     }
     .producto img {
-      height: 80px;
-      margin-right: 20px;
+      height: 100px;
+      margin-bottom: 10px;
+    }
+    .producto h3 {
+      text-align: center;
+      margin-bottom: 10px;
     }
     .carrito table {
       width: 100%;
@@ -103,59 +116,45 @@
 
   <section class="productos">
     <div class="producto">
-      <img src="fresa_con_crema.png" alt="Boli de Fresa">
-      <div>
-        <h3>Boli de Fresa - $15.00</h3>
-        <button onclick="agregarAlCarrito('Boli de Fresa', 15)">AÑADIR AL CARRITO</button>
-      </div>
+      <img src="fresa_con_crema.png" alt="Boli de Fresa con Crema">
+      <h3>Boli de Fresa con Crema - $15.00</h3>
+      <button onclick="agregarAlCarrito('Boli de Fresa con Crema', 15)">AÑADIR AL CARRITO</button>
     </div>
 
     <div class="producto">
       <img src="mango_con_chamoy.png" alt="Boli de Mango con Chamoy">
-      <div>
-        <h3>Boli de Mango con Chamoy - $15.00</h3>
-        <button onclick="agregarAlCarrito('Boli de Mango con Chamoy', 15)">AÑADIR AL CARRITO</button>
-      </div>
+      <h3>Boli de Mango con Chamoy - $15.00</h3>
+      <button onclick="agregarAlCarrito('Boli de Mango con Chamoy', 15)">AÑADIR AL CARRITO</button>
     </div>
 
     <div class="producto">
       <img src="sandia_con_chamoy.png" alt="Boli de Sandía con Chamoy">
-      <div>
-        <h3>Boli de Sandía con Chamoy - $15.00</h3>
-        <button onclick="agregarAlCarrito('Boli de Sandía con Chamoy', 15)">AÑADIR AL CARRITO</button>
-      </div>
+      <h3>Boli de Sandía con Chamoy - $15.00</h3>
+      <button onclick="agregarAlCarrito('Boli de Sandía con Chamoy', 15)">AÑADIR AL CARRITO</button>
     </div>
 
     <div class="producto">
       <img src="pina_con_chamoy.png" alt="Boli de Piña con Chamoy">
-      <div>
-        <h3>Boli de Piña con Chamoy - $15.00</h3>
-        <button onclick="agregarAlCarrito('Boli de Piña con Chamoy', 15)">AÑADIR AL CARRITO</button>
-      </div>
+      <h3>Boli de Piña con Chamoy - $15.00</h3>
+      <button onclick="agregarAlCarrito('Boli de Piña con Chamoy', 15)">AÑADIR AL CARRITO</button>
     </div>
 
     <div class="producto">
       <img src="oreo.png" alt="Boli de Oreo">
-      <div>
-        <h3>Boli de Oreo - $15.00</h3>
-        <button onclick="agregarAlCarrito('Boli de Oreo', 15)">AÑADIR AL CARRITO</button>
-      </div>
+      <h3>Boli de Oreo - $15.00</h3>
+      <button onclick="agregarAlCarrito('Boli de Oreo', 15)">AÑADIR AL CARRITO</button>
     </div>
 
     <div class="producto">
       <img src="platano_con_leche.png" alt="Boli de Plátano con Leche">
-      <div>
-        <h3>Boli de Plátano con Leche - $15.00</h3>
-        <button onclick="agregarAlCarrito('Boli de Plátano con Leche', 15)">AÑADIR AL CARRITO</button>
-      </div>
+      <h3>Boli de Plátano con Leche - $15.00</h3>
+      <button onclick="agregarAlCarrito('Boli de Plátano con Leche', 15)">AÑADIR AL CARRITO</button>
     </div>
 
     <div class="producto">
       <img src="duvalin.png" alt="Boli de Duvalín">
-      <div>
-        <h3>Boli de Duvalín - $15.00</h3>
-        <button onclick="agregarAlCarrito('Boli de Duvalín', 15)">AÑADIR AL CARRITO</button>
-      </div>
+      <h3>Boli de Duvalín - $15.00</h3>
+      <button onclick="agregarAlCarrito('Boli de Duvalín', 15)">AÑADIR AL CARRITO</button>
     </div>
   </section>
 
