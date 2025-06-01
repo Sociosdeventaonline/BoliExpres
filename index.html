@@ -183,18 +183,51 @@
   // Guarda después de actualizar
   localStorage.setItem('carritoBolis', JSON.stringify(carrito));
 }
-    function actualizarCarrito() {
-      const items = document.getElementById('itemsCarrito');
-      const totalElem = document.getElementById('total');
-      items.innerHTML = '';
-      let total = 0;
-      carrito.forEach(i => {
-        const sub = i.precio * i.cantidad;
-        total += sub;
-        items.innerHTML += `<tr><td>${i.nombre}</td><td>$${i.precio}</td><td>${i.cantidad}</td><td>$${sub.toFixed(2)}</td></tr>`;
-      });
-      totalElem.textContent = total.toFixed(2);
-    }
+function actualizarCarrito() {
+  const items = document.getElementById('itemsCarrito');
+  const totalElem = document.getElementById('total');
+  items.innerHTML = '';
+  let total = 0;
+
+  carrito.forEach((item, index) => {
+    const subtotal = item.precio * item.cantidad;
+    total += subtotal;
+
+    items.innerHTML += `
+      <tr>
+        <td>${item.nombre}</td>
+        <td>$${item.precio}</td>
+        <td>${item.cantidad}</td>
+        <td>$${subtotal.toFixed(2)}</td>
+        <td>
+          <button onclick="eliminarDelCarrito(${index})" style="background:red; color:white; border:none; padding:4px 8px; border-radius:4px;">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  totalElem.textContent = total.toFixed(2);
+}
+function eliminarDelCarrito(index) {
+  const item = carrito[index];
+  if (!item) return;
+
+  // Regresa la cantidad al inventario
+  inventario[item.nombre] += item.cantidad;
+
+  // Elimina el producto del carrito
+  carrito.splice(index, 1);
+
+  // Guarda el carrito actualizado
+  localStorage.setItem('carritoBolis', JSON.stringify(carrito));
+
+  // Refresca las vistas
+  actualizarCarrito();
+  renderProductos();
+}
+
 
 let datosCliente = {};
 
