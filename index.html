@@ -189,6 +189,7 @@
         <th>Cantidad</th>
         <th>Precio</th>
         <th>Subtotal</th>
+        <th>Estatus</th>
       </tr>
     </thead>
     <tbody id="tablaHistorialBody"></tbody>
@@ -346,15 +347,16 @@ window.open(url, '_blank');
 
 // Registrar venta en Firebase
 carrito.forEach(item => {
-  const venta = {
-    fecha: new Date().toLocaleString(),
-    cliente: datosCliente.nombre,
-    celular: datosCliente.celular,
-    metodo: 'Transferencia',
-    producto: item.nombre,
-    cantidad: item.cantidad,
-    precio: item.precio
-  };
+const venta = {
+  fecha: new Date().toLocaleString(),
+  cliente: datosCliente.nombre,
+  celular: datosCliente.celular,
+  metodo: 'Transferencia', // o Efectivo
+  producto: item.nombre,
+  cantidad: item.cantidad,
+  precio: item.precio,
+  estatus: 'pendiente'
+};
 
   const nuevaRef = firebaseRef(firebaseDB, 'historialVentas/' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
   firebaseSet(nuevaRef, venta);
@@ -396,15 +398,16 @@ window.open(url, '_blank');
 
 // Registrar venta en Firebase
 carrito.forEach(item => {
-  const venta = {
-    fecha: new Date().toLocaleString(),
-    cliente: datosCliente.nombre,
-    celular: datosCliente.celular,
-    metodo: 'Efectivo',
-    producto: item.nombre,
-    cantidad: item.cantidad,
-    precio: item.precio
-  };
+const venta = {
+  fecha: new Date().toLocaleString(),
+  cliente: datosCliente.nombre,
+  celular: datosCliente.celular,
+  metodo: 'Transferencia', // o Efectivo
+  producto: item.nombre,
+  cantidad: item.cantidad,
+  precio: item.precio,
+  estatus: 'pendiente'
+};
 
   const nuevaRef = firebaseRef(firebaseDB, 'historialVentas/' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
   firebaseSet(nuevaRef, venta);
@@ -540,18 +543,27 @@ function mostrarHistorialVentas() {
     let totalProductos = 0;
     let totalDinero = 0;
 
-    Object.values(datos).forEach(v => {
-      const fila = `
-        <tr>
-          <td>${v.fecha}</td>
-          <td>${v.cliente}</td>
-          <td>${v.celular}</td>
-          <td>${v.metodo}</td>
-          <td>${v.producto}</td>
-          <td>${v.cantidad}</td>
-          <td>$${v.precio}</td>
-          <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
-        </tr>`;
+Object.entries(datos).forEach(([key, v]) => {
+  const idVenta = key; // ✅ solo una vez
+
+
+const fila = `
+  <tr>
+    <td>${v.fecha}</td>
+    <td>${v.cliente}</td>
+    <td>${v.celular}</td>
+    <td>${v.metodo}</td>
+    <td>${v.producto}</td>
+    <td>${v.cantidad}</td>
+    <td>$${v.precio}</td>
+    <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
+    <td>
+      <button onclick="marcarComoPagado('${idVenta}')" style="background-color: ${v.estatus === 'pagado' ? '#16a34a' : '#facc15'}; color: black; border: none; border-radius: 6px; padding: 4px 8px;">
+        ${v.estatus === 'pagado' ? 'Pagado' : 'Pendiente'}
+      </button>
+    </td>
+  </tr>`;
+
       tablaBody.innerHTML += fila;
 
       // ✅ Sumamos totales dentro del loop
@@ -583,21 +595,45 @@ function filtrarHistorial() {
     const datos = snapshot.val();
     if (!datos) return;
 
-    Object.values(datos).forEach(v => {
-      const fila = `
-        <tr>
-          <td>${v.fecha}</td>
-          <td>${v.cliente}</td>
-          <td>${v.celular}</td>
-          <td>${v.metodo}</td>
-          <td>${v.producto}</td>
-          <td>${v.cantidad}</td>
-          <td>$${v.precio}</td>
-          <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
-        </tr>`;
+Object.entries(datos).forEach(([key, v]) => {
+  const idVenta = key; // ✅ solo una vez
+
+
+const fila = `
+  <tr>
+    <td>${v.fecha}</td>
+    <td>${v.cliente}</td>
+    <td>${v.celular}</td>
+    <td>${v.metodo}</td>
+    <td>${v.producto}</td>
+    <td>${v.cantidad}</td>
+    <td>$${v.precio}</td>
+    <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
+    <td>
+      <button onclick="marcarComoPagado('${idVenta}')" style="background-color: ${v.estatus === 'pagado' ? '#16a34a' : '#facc15'}; color: black; border: none; border-radius: 6px; padding: 4px 8px;">
+        ${v.estatus === 'pagado' ? 'Pagado' : 'Pendiente'}
+      </button>
+    </td>
+  </tr>`;
+
       tablaBody.innerHTML += fila;
     });
   });
+}
+
+function marcarComoPagado(idVenta) {
+  const confirmacion = confirm("¿Confirmas que esta venta ya fue pagada?");
+  if (!confirmacion) return;
+
+  const ventaRef = firebaseRef(firebaseDB, 'historialVentas/' + idVenta);
+  firebaseUpdate(ventaRef, { estatus: 'pagado' })
+    .then(() => {
+      alert("Venta marcada como pagada ✅");
+    })
+    .catch(err => {
+      console.error("Error al actualizar:", err);
+      alert("Ocurrió un error al actualizar el estatus.");
+    });
 }
 
     
