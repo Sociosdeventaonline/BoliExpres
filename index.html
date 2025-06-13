@@ -407,35 +407,35 @@ function pagarEfectivo() {
   });
 
   const total = document.getElementById('total').textContent;
- // Mensaje para el vendedor
+// Mensaje para el vendedor
 const mensajeCliente = `Hola, soy ${datosCliente.nombre}, este es mi número: ${datosCliente.celular}
-He realizado una compra y pagué por transferencia.
+He realizado un pedido y pagaré en efectivo.
 ${detallePedido}
-Total: $${total}
-Adjunto comprobante: `;
+Total: $${total}`;
 
 // Mensaje para el administrador (tú)
-const mensajeAdmin = `🚨 NUEVA ORDEN DE COMPRA 🚨
+const mensajeAdmin = `🧾 NUEVO PEDIDO EFECTIVO 🧾
 
 👤 Cliente: ${datosCliente.nombre}
 📱 Celular: ${datosCliente.celular}
-💳 Pago: Efectivo
-🧾 Pedido:
+💰 Pago: Efectivo
+🧊 Pedido:
 ${carrito.map(i => `• ${i.cantidad} x ${i.nombre} ($${i.precio})`).join('\n')}
 
-💰 Total: $${total}
+💵 Total: $${total}
 `;
 
-// Mostrar datos de pago al cliente
-alert(`Número de cuenta: 4152-3138-5188-0034\nBanco: BBVA\nTitular: Christian Martin\n\nUna vez realizado el depósito, por favor envía el comprobante para validar tu compra.`);
+// Mostrar alerta al cliente
+alert("Perfecto, tu pedido ha sido registrado con pago en efectivo.");
 
-// Abrir WhatsApp para cliente > vendedor
-const urlVendedor = `whatsapp://send?phone=529996152257&text=${encodeURIComponent(mensajeCliente)}`;
+// WhatsApp para vendedor
+const urlVendedor = `whatsapp://send?phone=529996102058&text=${encodeURIComponent(mensajeCliente)}`;
 window.open(urlVendedor, '_blank');
 
-// Abrir WhatsApp para administrador (tú)
+// WhatsApp para administrador
 const urlAdmin = `whatsapp://send?phone=529996102050&text=${encodeURIComponent(mensajeAdmin)}`;
 window.open(urlAdmin, '_blank');
+
 
 // Registrar venta en Firebase
 carrito.forEach(item => {
