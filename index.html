@@ -429,11 +429,11 @@ ${carrito.map(i => `• ${i.cantidad} x ${i.nombre} ($${i.precio})`).join('\n')}
 alert("Perfecto, tu pedido ha sido registrado con pago en efectivo.");
 
 // WhatsApp para vendedor
-const urlVendedor = `whatsapp://send?phone=529996102058&text=${encodeURIComponent(mensajeCliente)}`;
+const urlVendedor = `whatsapp://send?phone=529996152257&text=${encodeURIComponent(mensajeCliente)}`;
 window.open(urlVendedor, '_blank');
 
 // WhatsApp para administrador
-const urlAdmin = `whatsapp://send?phone=529996102050&text=${encodeURIComponent(mensajeAdmin)}`;
+const urlAdmin = `whatsapp://send?phone=529996102058&text=${encodeURIComponent(mensajeAdmin)}`;
 window.open(urlAdmin, '_blank');
 
 
