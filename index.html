@@ -629,12 +629,14 @@ function marcarComoPagado(idVenta) {
   firebaseUpdate(ventaRef, { estatus: 'pagado' })
     .then(() => {
       alert("Venta marcada como pagada ✅");
+      mostrarHistorialVentas(); // 🔁 vuelve a cargar el historial actualizado
     })
     .catch(err => {
       console.error("Error al actualizar:", err);
       alert("Ocurrió un error al actualizar el estatus.");
     });
 }
+
 
     
   
