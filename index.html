@@ -200,6 +200,11 @@
 <div id="historialVentas" style="display:none; padding:20px;">
   <h2>Historial de Ventas</h2>
   <input type="text" id="filtroBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por nombre, forma de pago o fecha" style="padding:5px; width:100%; margin-bottom:10px;"/>
+<div style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px;">
+  <label>Desde: <input type="date" id="fechaInicio" onchange="filtrarPorFechas()"></label>
+  <label>Hasta: <input type="date" id="fechaFin" onchange="filtrarPorFechas()"></label>
+</div>
+
   <table style="width:100%; border-collapse:collapse;">
     <thead>
       <tr style="background:#f0f0f0;">
@@ -651,6 +656,40 @@ function filtrarHistorial() {
   });
 }
 
+function filtrarPorFechas() {
+  const inicio = document.getElementById('fechaInicio').value;
+  const fin = document.getElementById('fechaFin').value;
+  const filas = document.querySelectorAll('#tablaHistorialBody tr');
+
+  let totalProductos = 0;
+  let totalDinero = 0;
+
+  filas.forEach(fila => {
+    const fechaTexto = fila.children[0].textContent; // Columna de fecha
+    const [dia, mes, anioYhora] = fechaTexto.split('/');
+    const [anio] = anioYhora.split(','); // ignoramos la hora
+    const fechaFormateada = `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+
+    const dentroRango =
+      (!inicio || fechaFormateada >= inicio) &&
+      (!fin || fechaFormateada <= fin);
+
+    if (dentroRango) {
+      fila.style.display = '';
+      const cantidad = parseInt(fila.children[5].textContent);
+      const subtotal = parseFloat(fila.children[7].textContent.replace('$', ''));
+      totalProductos += cantidad;
+      totalDinero += subtotal;
+    } else {
+      fila.style.display = 'none';
+    }
+  });
+
+  document.getElementById('totalProductosVendidos').textContent = totalProductos;
+  document.getElementById('dineroIngresado').textContent = totalDinero.toFixed(2);
+}
+
+
     function cargarHistorialVentas() {
   const tablaBody = document.getElementById('tablaHistorialBody');
   tablaBody.innerHTML = ''; // limpiar tabla
@@ -701,6 +740,13 @@ function marcarComoPagado(idVenta) {
       alert("Ocurrió un error al actualizar el estatus.");
     });
 }
+
+window.addEventListener('load', () => {
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('fechaInicio').value = hoy;
+  document.getElementById('fechaFin').value = hoy;
+  filtrarPorFechas(); // Carga inicial con la fecha actual
+});
 
 
     
