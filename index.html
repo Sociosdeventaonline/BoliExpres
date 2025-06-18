@@ -118,8 +118,6 @@
   <header>
     <h1>BOLIS</h1>
     <nav>
-      <button onclick="toggleLogin()">Vendedor</button>
-    </nav>
   </header>
 
   <div class="login-container" id="loginContainer" style="display:none;">
@@ -155,6 +153,17 @@
     <h3>Inventario disponible</h3>
     <div id="inventarioInputs"></div>
     <button onclick="guardarInventario()">Guardar inventario</button>
+<button onclick="togglePublicidad()">Mostrar/Ocultar Publicidad</button>
+
+<div id="editorPublicidad" style="display:none; margin-top: 20px;">
+  <h3>Editar Publicidad</h3>
+  <input type="text" id="tituloPublicidad" placeholder="Título"><br><br>
+  <textarea id="descripcionPublicidad" placeholder="Descripción corta" rows="3" style="width:100%;"></textarea><br><br>
+  <input type="text" id="precioPublicidad" placeholder="Precio"><br><br>
+  <input type="file" id="imagenesPublicidad" multiple><br><br>
+  <button onclick="guardarPublicidad()">Guardar Publicidad</button>
+</div>
+
   </div>
 
 <!-- INSTRUCCIONES -->
@@ -746,8 +755,55 @@ window.addEventListener('load', () => {
   document.getElementById('fechaInicio').value = hoy;
   document.getElementById('fechaFin').value = hoy;
   filtrarPorFechas(); // Carga inicial con la fecha actual
+mostrarPopupPublicidad();
+
 });
 
+function togglePublicidad() {
+  const editor = document.getElementById('editorPublicidad');
+  editor.style.display = editor.style.display === 'none' ? 'block' : 'none';
+}
+
+function guardarPublicidad() {
+  const titulo = document.getElementById('tituloPublicidad').value;
+  const descripcion = document.getElementById('descripcionPublicidad').value;
+  const precio = document.getElementById('precioPublicidad').value;
+  const imagenes = document.getElementById('imagenesPublicidad').files;
+
+  const readerPromises = Array.from(imagenes).map(file => {
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+  });
+
+  Promise.all(readerPromises).then(imagenesBase64 => {
+    const publicidad = { titulo, descripcion, precio, imagenes: imagenesBase64 };
+    localStorage.setItem('publicidadBolis', JSON.stringify(publicidad));
+    alert('Publicidad guardada correctamente');
+  });
+}
+
+function mostrarPopupPublicidad() {
+  const publicidad = JSON.parse(localStorage.getItem('publicidadBolis') || '{}');
+  if (!publicidad.titulo || !publicidad.imagenes) return;
+
+  const cont = document.getElementById('contenidoPublicidad');
+  cont.innerHTML = `
+    <h2>${publicidad.titulo}</h2>
+    <p>${publicidad.descripcion}</p>
+    <h3>Precio: ${publicidad.precio}</h3>
+    <div style="display:flex; overflow-x:auto; gap:10px; padding:10px;">
+      ${publicidad.imagenes.map(img => `<img src="${img}" style="height:150px; border-radius:10px;">`).join('')}
+    </div>
+  `;
+  document.getElementById('popupPublicidad').style.display = 'block';
+}
+
+function cerrarPublicidad() {
+  document.getElementById('popupPublicidad').style.display = 'none';
+}
 
     
   
@@ -782,6 +838,12 @@ window.addEventListener('load', () => {
     <p>Selecciona un método de pago para continuar:</p>
     <button onclick="pagarTransferencia()" style="margin:10px; padding:10px 20px; background:#2a9d8f; color:white; border:none; border-radius:5px;">Transferencia</button>
     <button onclick="pagarEfectivo()" style="margin:10px; padding:10px 20px; background:#4a4a4a; color:white; border:none; border-radius:5px;">Efectivo</button>
+  </div>
+</div>
+<div id="popupPublicidad" style="display:none; position:fixed; top:10%; left:10%; width:80%; background:white; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:9999; padding:20px;">
+  <span onclick="cerrarPublicidad()" style="float:right; cursor:pointer; font-size:20px; padding:10px;">✖️</span>
+  <div id="contenidoPublicidad" style="text-align:center;">
+    <!-- Aquí se insertará el contenido -->
   </div>
 </div>
 
