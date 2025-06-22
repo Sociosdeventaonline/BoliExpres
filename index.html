@@ -171,15 +171,15 @@
       Vendedor
     </button>
   </nav>
-  <div id="menuMovil" class="menu-movil" style="display: none;">
-    <button onclick="toggleLogin()">Vendedor</button>
-    <div id="historialBotonMovil" style="display:none;">
-      <button onclick="mostrarHistorialVentas()">H ventas</button>
-    </div>
-    <div id="logoutContainerMovil" style="display:none;">
-      <button onclick="cerrarSesion()">Cerrar sesión</button>
-    </div>
+<div id="menuMovil" class="menu-movil" style="display: none;">
+  <button onclick="toggleLogin(); toggleMenu()">Vendedor</button>
+  <div id="historialBotonMovil" style="display:none;">
+    <button onclick="mostrarHistorialVentas(); toggleMenu()">H ventas</button>
   </div>
+  <div id="logoutContainerMovil" style="display:none;">
+    <button onclick="cerrarSesion(); toggleMenu()">Cerrar sesión</button>
+  </div>
+</div>
 </header>
 
   <div class="login-container" id="loginContainer" style="display:none;">
@@ -603,6 +603,9 @@ if (localStorage.getItem('sesionActiva') === '1') {
   document.getElementById('logoutContainer').style.display = 'block';
   document.getElementById('historialBoton').style.display = 'block'; // 👈 Esta línea
   crearCamposInventario();
+document.getElementById('historialBotonMovil').style.display = 'block';
+document.getElementById('logoutContainerMovil').style.display = 'block';
+
 }
 
 
@@ -860,6 +863,12 @@ function cerrarPublicidad() {
     
   
   </script>
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById('menuMovil');
+    menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+  }
+</script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
   import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
