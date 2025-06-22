@@ -12,19 +12,25 @@
       padding: 0;
       color: #1c2b33;
     }
- .carrito {
+.carrito {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
+  right: 0; /* agrega esto */
+  width: 100vw; /* asegura que no se pase */
+  max-width: 100%;
   z-index: 999;
   background-color: #ffffff;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   padding: 20px;
+  box-sizing: border-box; /* importante para no salirse */
+}
 body {
-  padding-bottom: 220px;
+  margin: 0;
+  padding-bottom: 240px; /* espacio para el carrito */
+  overflow-x: hidden; /* evita que se desborde en X */
 }
 
 }
