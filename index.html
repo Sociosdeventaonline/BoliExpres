@@ -166,6 +166,41 @@
     display: none !important;
   }
 }
+.instrucciones {
+  background: linear-gradient(to right, #e0f7fa, #fff);
+  padding: 40px 20px;
+  text-align: center;
+  border-bottom: 2px solid #d0d7de;
+}
+.instrucciones h2 {
+  font-size: 2em;
+  color: #124559;
+  margin-bottom: 30px;
+}
+.pasos {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.paso {
+  max-width: 200px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.paso img {
+  width: 100px;
+  height: auto;
+  margin-bottom: 15px;
+}
+.paso p {
+  font-size: 0.95em;
+  color: #1c2b33;
+  margin: 0;
+}
+
 
   </style>
 </head>
@@ -231,12 +266,24 @@
   </div>
 
 <!-- INSTRUCCIONES -->
-<section style="padding: 20px; text-align: center; background-color: #fff6f2; border-bottom: 1px solid #e0d5cf;">
-  <h2 style="margin-bottom: 10px;">¿Cómo comprar?</h2>
-  <p style="margin: 5px 0;">1. Elige tus bolis favoritos y agrégalos al carrito dando clic en AÑADIR AL CARRITO.</p>
-  <p style="margin: 5px 0;">2. Cuando hayas terminado de seleecionar tus bolis da clic en <strong>"Finalizar compra"</strong> y sigue las instrucciones de pago.</p>
-  <p style="margin: 5px 0;">3. Una vez pagado, puedes tomar tu paleta del <strong>congelador del refri</strong>. ❄️</p>
+<section class="instrucciones">
+  <h2>¿Cómo comprar tus bolis?</h2>
+  <div class="pasos">
+    <div class="paso">
+      <img src="cubohielo1.png" alt="Paso 1">
+      <p><strong>Paso 1:</strong><br>Elige tus sabores y da clic en <em>“Añadir al carrito”</em>.</p>
+    </div>
+    <div class="paso">
+      <img src="cubohielo2.png" alt="Paso 2">
+      <p><strong>Paso 2:</strong><br>Da clic en <em>“Finalizar compra”</em> y paga.</p>
+    </div>
+    <div class="paso">
+      <img src="cubohielo3.png" alt="Paso 3">
+      <p><strong>Paso 3:</strong><br>Toma tu boli del <em>refri congelador</em>. ❄️</p>
+    </div>
+  </div>
 </section>
+
 
 
   <section class="productos" id="productos"></section>
