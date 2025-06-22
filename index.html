@@ -360,7 +360,9 @@ body {
   <button onclick="toggleLogin(); toggleMenu()">Vendedor</button>
   <div id="historialBotonMovil" style="display:none;">
     <button onclick="mostrarHistorialVentas(); toggleMenu()">H ventas</button>
-  </div>
+<div id="publicidadBotonMovil" style="display:none;">
+  <button onclick="togglePublicidad(); toggleMenu()">Publicidad</button>
+</div>
   <div id="logoutContainerMovil" style="display:none;">
     <button onclick="cerrarSesion(); toggleMenu()">Cerrar sesión</button>
   </div>
@@ -803,6 +805,8 @@ if (localStorage.getItem('sesionActiva') === '1') {
   crearCamposInventario();
 document.getElementById('historialBotonMovil').style.display = 'block';
 document.getElementById('logoutContainerMovil').style.display = 'block';
+  document.getElementById('publicidadBotonMovil').style.display = 'block';
+
 
 }
 
