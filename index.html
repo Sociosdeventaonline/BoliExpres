@@ -265,7 +265,30 @@ body {
   margin-bottom: 10px;
 }
 
-    
+.titulo-bolis {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1c2b33;
+  background: linear-gradient(to right, #a7e9ff, #fce4ec);
+  padding: 12px 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin: 30px auto;
+  width: fit-content;
+  animation: resaltar 1.5s infinite alternate;
+}
+
+@keyframes resaltar {
+  0% {
+    transform: scale(1);
+    background-color: #e0f7ff;
+  }
+  100% {
+    transform: scale(1.03);
+    background-color: #cde9ff;
+  }
+}    
 
   </style>
 </head>
@@ -331,7 +354,7 @@ body {
   </div>
 
 <section class="instrucciones">
-  <h2 style="text-align: center;">¿Cómo comprar tus bolis?</h2>
+<h2 class="titulo-bolis">🦭 ¿Cómo comprar tus bolis? 🍧</h2>
   <div class="contenedor-pasos">
     <div class="paso">
       <img src="cubohielo1.png" alt="Paso 1">
