@@ -366,6 +366,49 @@ body {
   background-color: #3b82f6;
 }
 
+#popupPublicidad {
+  display: none;
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 450px;
+  background-image: url('fondo_publicidad.png'); /* tu fondo decorativo */
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  padding: 20px;
+  color: #1c2b33;
+  text-align: center;
+}
+
+#popupPublicidad h2 {
+  font-size: 1.5em;
+  margin-bottom: 8px;
+}
+
+#popupPublicidad h3 {
+  margin-top: 8px;
+  font-size: 1.2em;
+  color: #124559;
+}
+
+#popupPublicidad p {
+  font-size: 1em;
+  color: #333;
+}
+
+#popupPublicidad img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
 
   </style>
 </head>
@@ -1078,9 +1121,8 @@ function mostrarPopupPublicidad() {
     <h2>${publicidad.titulo}</h2>
     <p>${publicidad.descripcion}</p>
     <h3>Precio: ${publicidad.precio}</h3>
-    <div style="display:flex; overflow-x:auto; gap:10px; padding:10px;">
-      ${publicidad.imagenes.map(img => `<img src="${img}" style="height:150px; border-radius:10px;">`).join('')}
-    </div>
+   <img src="${publicidad.imagenes[0]}" alt="Publicidad" />
+
   `;
   document.getElementById('popupPublicidad').style.display = 'block';
 }
@@ -1130,12 +1172,11 @@ function cerrarPublicidad() {
     <button onclick="pagarEfectivo()" style="margin:10px; padding:10px 20px; background:#4a4a4a; color:white; border:none; border-radius:5px;">Efectivo</button>
   </div>
 </div>
-<div id="popupPublicidad" style="display:none; position:fixed; top:10%; left:10%; width:80%; background:white; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:9999; padding:20px;">
+<div id="popupPublicidad">
   <span onclick="cerrarPublicidad()" style="float:right; cursor:pointer; font-size:20px; padding:10px;">✖️</span>
-  <div id="contenidoPublicidad" style="text-align:center;">
-    <!-- Aquí se insertará el contenido -->
-  </div>
+  <div id="contenidoPublicidad" style="text-align:center;"></div>
 </div>
+
 
   
 </body>
