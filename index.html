@@ -339,6 +339,33 @@ body {
   margin-bottom: 12px;
 }
 
+#editorPublicidad input[type="text"],
+#editorPublicidad textarea,
+#editorPublicidad input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+#editorPublicidad button {
+  background-color: #1e3a8a;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#editorPublicidad button:hover {
+  background-color: #3b82f6;
+}
+
 
   </style>
 </head>
@@ -394,7 +421,7 @@ body {
     <button onclick="guardarInventario()">Guardar inventario</button>
 <button onclick="togglePublicidad()">Mostrar/Ocultar Publicidad</button>
 
-<div id="editorPublicidad" style="display:none; margin-top: 20px;">
+<div id="editorPublicidad" style="display: none; max-width: 500px; margin: 30px auto; background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
   <h3>Editar Publicidad</h3>
   <input type="text" id="tituloPublicidad" placeholder="Título"><br><br>
   <textarea id="descripcionPublicidad" placeholder="Descripción corta" rows="3" style="width:100%;"></textarea><br><br>
