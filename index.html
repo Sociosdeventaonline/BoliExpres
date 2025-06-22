@@ -239,6 +239,32 @@ body {
   transform: scale(0.96); /* efecto de "clic" presionado */
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
+.contenedor-pasos {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 10px 16px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 24px;
+}
+
+.paso {
+  flex: 0 0 auto;
+  width: 220px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  scroll-snap-align: start;
+}
+
+.paso img {
+  width: 60px;
+  margin-bottom: 10px;
+}
+
     
 
   </style>
@@ -304,24 +330,24 @@ body {
 
   </div>
 
-<!-- INSTRUCCIONES -->
 <section class="instrucciones">
-  <h2>¿Cómo comprar tus bolis?</h2>
-  <div class="pasos">
+  <h2 style="text-align: center;">¿Cómo comprar tus bolis?</h2>
+  <div class="contenedor-pasos">
     <div class="paso">
       <img src="cubohielo1.png" alt="Paso 1">
-      <p><strong>Paso 1:</strong><br>Elige tus sabores y da clic en <em>“Añadir al carrito”</em>.</p>
+      <p><strong>Paso 1:</strong> Elige tus sabores y da clic en <em>“Añadir al carrito”</em>.</p>
     </div>
     <div class="paso">
       <img src="cubohielo2.png" alt="Paso 2">
-      <p><strong>Paso 2:</strong><br>Da clic en <em>“Finalizar compra”</em> y paga.</p>
+      <p><strong>Paso 2:</strong> Da clic en <em>“Finalizar compra”</em> y paga.</p>
     </div>
     <div class="paso">
       <img src="cubohielo3.png" alt="Paso 3">
-      <p><strong>Paso 3:</strong><br>Toma tu boli del <em>refri congelador</em>. ❄️</p>
+      <p><strong>Paso 3:</strong> Toma tu boli del <em>refri congelador</em>. ❄️</p>
     </div>
   </div>
 </section>
+
 
 
 
