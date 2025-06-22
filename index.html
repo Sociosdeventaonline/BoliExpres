@@ -12,14 +12,18 @@
       padding: 0;
       color: #1c2b33;
     }
-  .carrito {
-    padding: 20px;
-    max-width: 900px;
-    margin: 40px auto;
-    background-color: #fffaf7;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
+ .carrito {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: #ffffff;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding: 20px;
+}
 .tabla-responsive {
   overflow-x: auto;
   width: 100%;
