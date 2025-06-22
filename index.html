@@ -32,6 +32,7 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid #ddd;
+      position: relative;
     }
     header h1 {
       margin: 0;
@@ -131,13 +132,13 @@
     <button onclick="cerrarSesion()">Cerrar sesión</button>
   </div>
 
-<nav style="display: flex; gap: 10px; align-items: center;">
+<nav style="display: flex; gap: 10px; align-items: center; position: absolute; top: 20px; right: 140px;">
   <div id="historialBoton" style="display:none;">
-    <button onclick="mostrarHistorialVentas()" style="background-color:#2aa198; color:white; padding:10px 20px; border:none; border-radius:5px; font-size:1em;">
+    <button onclick="mostrarHistorialVentas()" style="background-color:#1e40af; color:white; padding:10px 20px; border:none; border-radius:5px; font-size:1em;">
       H ventas
     </button>
   </div>
-  <button onclick="toggleLogin()" style="background-color:#2a9d8f; color:white; padding:10px 20px; border:none; border-radius:5px; font-size:1em;">
+  <button onclick="toggleLogin()" style="background-color:#1e40af; color:white; padding:10px 20px; border:none; border-radius:5px; font-size:1em;">
     Vendedor
   </button>
 </nav>
