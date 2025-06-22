@@ -319,15 +319,21 @@ body {
 .paso-item {
   flex: 0 0 auto;
   width: 240px;
-  min-height: 260px;
   background-color: #ffffff;
   border-radius: 16px;
-  padding: 16px;
+  padding: 12px; /* antes 16px, ahora menos */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
   scroll-snap-align: center;
   text-align: center;
+  min-height: auto; /* quita la altura mínima */
 }
-
+.paso-item p {
+  margin-bottom: 0;
+}
+.paso-item img {
+  max-width: 80px;
+  margin-bottom: 8px; /* en vez de 12px */
+}
 .paso-item img {
   max-width: 80px;
   margin-bottom: 12px;
