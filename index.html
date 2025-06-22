@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BOLIS - Tienda de Bolis de Hielo</title>
   <style>
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+
     body {
       font-family: Arial, sans-serif;
       background-color: #d20016;
@@ -266,7 +268,7 @@ body {
 }
 
 .titulo-bolis {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: bold;
   color: #1c2b33;
   background: linear-gradient(to right, #a7e9ff, #fce4ec);
@@ -276,19 +278,32 @@ body {
   text-align: center;
   margin: 30px auto;
   width: fit-content;
-  animation: resaltar 1.5s infinite alternate;
 }
 
-@keyframes resaltar {
-  0% {
-    transform: scale(1);
-    background-color: #e0f7ff;
-  }
-  100% {
-    transform: scale(1.03);
-    background-color: #cde9ff;
-  }
-}    
+.pasos-flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.paso-item {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 12px;
+  text-align: center;
+  width: 160px;
+}
+
+.paso-item img {
+  width: 70px;
+  height: auto;
+  margin-bottom: 10px;
+}
+  
 
   </style>
 </head>
@@ -354,22 +369,23 @@ body {
   </div>
 
 <section class="instrucciones">
-<h2 class="titulo-bolis">🦭 ¿Cómo comprar tus bolis? 🍧</h2>
-  <div class="contenedor-pasos">
-    <div class="paso">
+  <h2 class="titulo-bolis">🦭 ¿Cómo comprar tus bolis? 🍧</h2>
+  <div class="pasos-flex">
+    <div class="paso-item">
       <img src="cubohielo1.png" alt="Paso 1">
-      <p><strong>Paso 1:</strong> Elige tus sabores y da clic en <em>“Añadir al carrito”</em>.</p>
+      <p><strong>Paso 1:</strong><br> Elige tus sabores y da clic en <em>“Añadir al carrito”</em>.</p>
     </div>
-    <div class="paso">
+    <div class="paso-item">
       <img src="cubohielo2.png" alt="Paso 2">
-      <p><strong>Paso 2:</strong> Da clic en <em>“Finalizar compra”</em> y paga.</p>
+      <p><strong>Paso 2:</strong><br> Da clic en <em>“Finalizar compra”</em> y paga.</p>
     </div>
-    <div class="paso">
+    <div class="paso-item">
       <img src="cubohielo3.png" alt="Paso 3">
-      <p><strong>Paso 3:</strong> Toma tu boli del <em>refri congelador</em>. ❄️</p>
+      <p><strong>Paso 3:</strong><br> Toma tu boli del <em>refri congelador</em>. ❄️</p>
     </div>
   </div>
 </section>
+
 
 
 
