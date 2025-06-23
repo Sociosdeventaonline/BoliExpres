@@ -500,6 +500,7 @@ body {
   </div>
 
 <section class="instrucciones">
+<div id="productos" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;"></div>
   <h2 class="titulo-bolis">¿Cómo comprar tus bolis? 🍧</h2>
 <div class="pasos-flex scroll-horizontal">
     <div class="paso-item">
@@ -620,6 +621,47 @@ ${agotado ? '<strong>AGOTADO</strong>' : `<button class="boton-agregar" onclick=
 
       });
     }
+
+
+
+
+function mostrarGalletas() {
+  const contenedor = document.getElementById("productos");
+  contenedor.innerHTML = "";
+
+  firebase.database().ref("inventario").once("value").then((snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+
+    Object.keys(data).forEach((nombre) => {
+      const piezas = data[nombre];
+
+      // Solo mostrar si es galleta
+      const esGalleta = nombre.toLowerCase().includes("galleta") || nombre.toLowerCase().includes("chokis") || nombre.toLowerCase().includes("emperador");
+      if (piezas > 0 && esGalleta) {
+        const id = nombre.replace(/\s+/g, "-").toLowerCase();
+        const imagenNombre = id + ".png";
+
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta-galleta";
+        tarjeta.innerHTML = `
+          <div class="stock-label">Pz disponibles: ${piezas}</div>
+          <img src="img/${imagenNombre}" alt="${nombre}" style="width: 100px; height: 100px; object-fit: contain;">
+          <h4>${nombre} - $10.00</h4>
+          <button onclick="agregarAlCarrito('${nombre}', 10)">AÑADIR AL CARRITO</button>
+        `;
+        contenedor.appendChild(tarjeta);
+      }
+    });
+  });
+}
+
+window.onload = mostrarGalletas;
+
+
+
+
+
 
     function agregarAlCarrito(nombre, precio) {
       if (inventario[nombre] <= 0) return;
