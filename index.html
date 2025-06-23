@@ -6,7 +6,6 @@
   <title>BOLIS - Tienda de Bolis de Hielo</title>
 <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
 
-
   <style>
 
     body {
@@ -45,7 +44,7 @@ body {
   overflow-x: auto;
   width: 100%;
 }
-   
+
     header {
       background-color: #ffffff;
       padding: 20px;
@@ -306,7 +305,7 @@ body {
   height: auto;
   margin-bottom: 10px;
 }
-  
+
 .scroll-horizontal {
   display: flex;
   overflow-x: auto;
@@ -426,15 +425,6 @@ body {
 
 
   </style>
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
-
-
-
-
-
 </head>
 <body onload="verificarSesion()">
   <header>
@@ -500,7 +490,6 @@ body {
   </div>
 
 <section class="instrucciones">
-<div id="productos" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;"></div>
   <h2 class="titulo-bolis">¿Cómo comprar tus bolis? 🍧</h2>
 <div class="pasos-flex scroll-horizontal">
     <div class="paso-item">
@@ -622,47 +611,6 @@ ${agotado ? '<strong>AGOTADO</strong>' : `<button class="boton-agregar" onclick=
       });
     }
 
-
-
-
-function mostrarGalletas() {
-  const contenedor = document.getElementById("productos");
-  contenedor.innerHTML = "";
-
-  firebase.database().ref("inventario").once("value").then((snapshot) => {
-    const data = snapshot.val();
-    if (!data) return;
-
-    Object.keys(data).forEach((nombre) => {
-      const piezas = data[nombre];
-
-      // Solo mostrar si es galleta
-      const esGalleta = nombre.toLowerCase().includes("galleta") || nombre.toLowerCase().includes("chokis") || nombre.toLowerCase().includes("emperador");
-      if (piezas > 0 && esGalleta) {
-        const id = nombre.replace(/\s+/g, "-").toLowerCase();
-        const imagenNombre = id + ".png";
-
-        const tarjeta = document.createElement("div");
-        tarjeta.className = "tarjeta-galleta";
-        tarjeta.innerHTML = `
-          <div class="stock-label">Pz disponibles: ${piezas}</div>
-          <img src="img/${imagenNombre}" alt="${nombre}" style="width: 100px; height: 100px; object-fit: contain;">
-          <h4>${nombre} - $10.00</h4>
-          <button onclick="agregarAlCarrito('${nombre}', 10)">AÑADIR AL CARRITO</button>
-        `;
-        contenedor.appendChild(tarjeta);
-      }
-    });
-  });
-}
-
-window.onload = mostrarGalletas;
-
-
-
-
-
-
     function agregarAlCarrito(nombre, precio) {
       if (inventario[nombre] <= 0) return;
       const index = carrito.findIndex(i => i.nombre === nombre);
@@ -739,7 +687,7 @@ function finalizarCompra() {
 }
 function pagarTransferencia() {
   document.getElementById('metodoPagoModal').style.display = 'none';
-  
+
   let detallePedido = '';
   carrito.forEach(i => {
     detallePedido += `- ${i.cantidad} x ${i.nombre} ($${i.precio})\n`;
@@ -1149,10 +1097,8 @@ window.addEventListener('load', () => {
   document.getElementById('fechaFin').value = hoy;
   filtrarPorFechas(); // Carga inicial con la fecha actual
 mostrarPopupPublicidad();
-sincronizarInventarioDesdePublicidad();
-  sincronizarPublicidadDesdeInventario();
-});
 
+});
 
 function togglePublicidad() {
   const editor = document.getElementById('editorPublicidad');
@@ -1199,8 +1145,8 @@ function cerrarPublicidad() {
   document.getElementById('popupPublicidad').style.display = 'none';
 }
 
-    
-  
+
+
   </script>
 <script>
   function toggleMenu() {
@@ -1246,141 +1192,6 @@ function cerrarPublicidad() {
 </div>
 
 
-  <!-- Publicidad de Galletas -->
-<div id="galletasPublicidad" style="display:none; padding:20px;">
-  <div id="galletasCarrusel" style="
-    display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  "></div>
-</div>
 
-
-<script>
-  async function mostrarPublicidadGalletas() {
-    const urlBase = "https://sociosdeventaonline.github.io/BoliExpres/galletas/";
-    const contenedor = document.getElementById("galletasCarrusel");
-    contenedor.innerHTML = "";
-
-    const snapshot = await firebase.database().ref("publicidadGalletas").once("value");
-    const datos = snapshot.val();
-
-    for (const key in datos) {
-      const galleta = datos[key];
-      if (galleta.piezas > 0) {
-        const tarjeta = document.createElement("div");
-        tarjeta.style.cssText = `
-          min-width: 250px;
-          background: url('https://sociosdeventaonline.github.io/BoliExpres/fondo-galleta.png') center/cover;
-          padding: 20px;
-          color: white;
-          text-align: center;
-          border-radius: 12px;
-          scroll-snap-align: start;
-        `;
-
-        tarjeta.innerHTML = `
-          <h3 style="font-family: 'Chewy', cursive;">${galleta.nombre}</h3>
-          <p style="font-family: 'Chewy', cursive;">Precio: $${galleta.precio.toFixed(2)}</p>
-          <img src="${urlBase + galleta.imagen}" style="width: 100%; max-height: 180px; object-fit: contain; background: white; border-radius: 8px; margin: 10px 0;">
-          <button onclick="agregarGalletaAlCarrito('${key}')" style="padding: 10px 20px; background-color: #ff4081; color: white; border: none; border-radius: 8px; font-family: 'Fredoka'; font-size: 16px; margin-top: 10px;">Agregar al carrito</button>
-        `;
-
-        contenedor.appendChild(tarjeta);
-      }
-    }
-
-    document.getElementById("galletasPublicidad").style.display = "block";
-  }
-
-function sincronizarInventarioDesdePublicidad() {
-  const refGalletas = firebase.database().ref("publicidadGalletas");
-
-  refGalletas.on("value", (snapshot) => {
-    const datos = snapshot.val();
-    if (!datos) return;
-
-    const actualizaciones = {};
-
-    Object.keys(datos).forEach((key) => {
-      const galleta = datos[key];
-      if (galleta.nombre && typeof galleta.piezas === 'number') {
-        actualizaciones[`inventario/${galleta.nombre}`] = galleta.piezas;
-      }
-    });
-
-    firebase.database().ref().update(actualizaciones)
-      .then(() => console.log("Inventario sincronizado desde publicidadGalletas"))
-      .catch((error) => console.error("Error al sincronizar:", error));
-  });
-}
-
-
-
-function sincronizarPublicidadDesdeInventario() {
-  const refInventario = firebase.database().ref("inventario");
-
-  refInventario.on("value", (snapshot) => {
-    const inventarioDatos = snapshot.val();
-    if (!inventarioDatos) return;
-
-    const refPublicidad = firebase.database().ref("publicidadGalletas");
-
-    refPublicidad.once("value").then((snapshotPublicidad) => {
-      const publicidadDatos = snapshotPublicidad.val();
-      if (!publicidadDatos) return;
-
-      const actualizaciones = {};
-
-      Object.keys(publicidadDatos).forEach((id) => {
-        const nombreGalleta = publicidadDatos[id].nombre;
-        const nuevoStock = inventarioDatos[nombreGalleta];
-
-        if (typeof nuevoStock === "number") {
-          actualizaciones[`publicidadGalletas/${id}/piezas`] = nuevoStock;
-        }
-      });
-
-      firebase.database().ref().update(actualizaciones)
-        .then(() => console.log("PublicidadGalletas sincronizada desde inventario"))
-        .catch((error) => console.error("Error al sincronizar:", error));
-    });
-  });
-}
-
-
-
-function agregarGalletaAlCarrito(id) {
-  firebase.database().ref(`publicidadGalletas/${id}`).once("value").then((snapshot) => {
-    const galleta = snapshot.val();
-    if (!galleta || galleta.piezas <= 0) return;
-
-    const nombre = galleta.nombre;
-    const precio = galleta.precio;
-
-    const index = carrito.findIndex(i => i.nombre === nombre);
-    if (index >= 0) {
-      carrito[index].cantidad++;
-    } else {
-      carrito.push({ nombre, precio, cantidad: 1 });
-    }
-
-    inventario[nombre] = (inventario[nombre] ?? 0) - 1;
-    actualizarCarrito();
-    renderProductos();
-
-    firebase.database().ref(`publicidadGalletas/${id}/piezas`).set(galleta.piezas - 1);
-    firebase.database().ref(`inventario/${nombre}`).set(inventario[nombre]);
-  });
-}
-</script>
-
-<section id="publicidad-galletas" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;"></section>
-
-
-
-  
 </body>
 </html>
