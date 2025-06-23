@@ -1107,8 +1107,10 @@ window.addEventListener('load', () => {
   document.getElementById('fechaFin').value = hoy;
   filtrarPorFechas(); // Carga inicial con la fecha actual
 mostrarPopupPublicidad();
-
+sincronizarInventarioDesdePublicidad();
+  sincronizarPublicidadDesdeInventario();
 });
+
 
 function togglePublicidad() {
   const editor = document.getElementById('editorPublicidad');
@@ -1251,24 +1253,88 @@ function cerrarPublicidad() {
     document.getElementById("galletasPublicidad").style.display = "block";
   }
 
-  function agregarGalletaAlCarrito(id) {
-    alert("Galleta agregada: " + id);
-    // Aquí puedes conectar con tu sistema de carrito
-  }
-</script>
+function sincronizarInventarioDesdePublicidad() {
+  const refGalletas = firebase.database().ref("publicidadGalletas");
 
-<script>
-  firebase.database().ref("publicidadActiva").on("value", (snapshot) => {
-    const activa = snapshot.val();
-    if (activa === true) {
-      mostrarPublicidadGalletas();
-    } else {
-      document.getElementById("galletasPublicidad").style.display = "none";
-    }
+  refGalletas.on("value", (snapshot) => {
+    const datos = snapshot.val();
+    if (!datos) return;
+
+    const actualizaciones = {};
+
+    Object.keys(datos).forEach((key) => {
+      const galleta = datos[key];
+      if (galleta.nombre && typeof galleta.piezas === 'number') {
+        actualizaciones[`inventario/${galleta.nombre}`] = galleta.piezas;
+      }
+    });
+
+    firebase.database().ref().update(actualizaciones)
+      .then(() => console.log("Inventario sincronizado desde publicidadGalletas"))
+      .catch((error) => console.error("Error al sincronizar:", error));
   });
+}
+
+
+
+function sincronizarPublicidadDesdeInventario() {
+  const refInventario = firebase.database().ref("inventario");
+
+  refInventario.on("value", (snapshot) => {
+    const inventarioDatos = snapshot.val();
+    if (!inventarioDatos) return;
+
+    const refPublicidad = firebase.database().ref("publicidadGalletas");
+
+    refPublicidad.once("value").then((snapshotPublicidad) => {
+      const publicidadDatos = snapshotPublicidad.val();
+      if (!publicidadDatos) return;
+
+      const actualizaciones = {};
+
+      Object.keys(publicidadDatos).forEach((id) => {
+        const nombreGalleta = publicidadDatos[id].nombre;
+        const nuevoStock = inventarioDatos[nombreGalleta];
+
+        if (typeof nuevoStock === "number") {
+          actualizaciones[`publicidadGalletas/${id}/piezas`] = nuevoStock;
+        }
+      });
+
+      firebase.database().ref().update(actualizaciones)
+        .then(() => console.log("PublicidadGalletas sincronizada desde inventario"))
+        .catch((error) => console.error("Error al sincronizar:", error));
+    });
+  });
+}
+
+
+
+function agregarGalletaAlCarrito(id) {
+  firebase.database().ref(`publicidadGalletas/${id}`).once("value").then((snapshot) => {
+    const galleta = snapshot.val();
+    if (!galleta || galleta.piezas <= 0) return;
+
+    const nombre = galleta.nombre;
+    const precio = galleta.precio;
+
+    const index = carrito.findIndex(i => i.nombre === nombre);
+    if (index >= 0) {
+      carrito[index].cantidad++;
+    } else {
+      carrito.push({ nombre, precio, cantidad: 1 });
+    }
+
+    inventario[nombre] = (inventario[nombre] ?? 0) - 1;
+    actualizarCarrito();
+    renderProductos();
+
+    firebase.database().ref(`publicidadGalletas/${id}/piezas`).set(galleta.piezas - 1);
+    firebase.database().ref(`inventario/${nombre}`).set(inventario[nombre]);
+  });
+}
 </script>
 
-<section id="publicidad-galletas" style="display: flex; flex-wrap: wrap; gap: 10px;"></section>
 <section id="publicidad-galletas" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;"></section>
 
 
