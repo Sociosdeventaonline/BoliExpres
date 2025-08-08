@@ -728,12 +728,8 @@ ${carrito.map(i => `• ${i.cantidad} x ${i.nombre} ($${i.precio})`).join('\n')}
 alert(`Número de cuenta: 4152-3138-5188-0034\nBanco: BBVA\nTitular: Christian Martin\n\nUna vez realizado el depósito, por favor envía el comprobante para validar tu compra.`);
 
 // Abrir WhatsApp para cliente > vendedor
-const urlVendedor = `whatsapp://send?phone=529996152257&text=${encodeURIComponent(mensajeCliente)}`;
+const urlVendedor = `whatsapp://send?phone=529993526178&text=${encodeURIComponent(mensajeCliente)}`;
 window.open(urlVendedor, '_blank');
-
-// Abrir WhatsApp para administrador (tú)
-const urlAdmin = `whatsapp://send?phone=529996102058&text=${encodeURIComponent(mensajeAdmin)}`;
-window.open(urlAdmin, '_blank');
 
 
 // Registrar venta en Firebase
@@ -1194,6 +1190,7 @@ function cerrarPublicidad() {
 
 </body>
 </html>
+
 
 
 
