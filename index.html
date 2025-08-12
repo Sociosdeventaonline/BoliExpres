@@ -562,6 +562,7 @@ body {
         <th>Precio</th>
         <th>Subtotal</th>
         <th>Estatus</th>
+        <th>Estatus Entrega</th> <!-- NUEVA COLUMNA -->
       </tr>
     </thead>
     <tbody id="tablaHistorialBody"></tbody>
@@ -738,11 +739,12 @@ const venta = {
   fecha: new Date().toLocaleString(),
   cliente: datosCliente.nombre,
   celular: datosCliente.celular,
-  metodo: 'Transferencia', // o Efectivo
+  metodo: 'Efectivo',
   producto: item.nombre,
   cantidad: item.cantidad,
   precio: item.precio,
   estatus: 'pendiente'
+  entregado: false
 };
 
   const nuevaRef = firebaseRef(firebaseDB, 'historialVentas/' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
@@ -810,7 +812,7 @@ const venta = {
   fecha: new Date().toLocaleString(),
   cliente: datosCliente.nombre,
   celular: datosCliente.celular,
-  metodo: 'Transferencia', // o Efectivo
+  metodo: 'Efectivo',
   producto: item.nombre,
   cantidad: item.cantidad,
   precio: item.precio,
@@ -953,13 +955,22 @@ function mostrarHistorialVentas() {
   const ventasRef = firebaseRef(firebaseDB, 'historialVentas');
   firebaseOnValue(ventasRef, snapshot => {
     const datos = snapshot.val();
-    if (!datos) return;
+    if (!datos) {
+      tablaBody.innerHTML = '<tr><td colspan="10">No hay ventas registradas.</td></tr>';
+      document.getElementById('totalProductosVendidos').textContent = 0;
+      document.getElementById('dineroIngresado').textContent = '0.00';
+      return;
+    }
 
     let totalProductos = 0;
     let totalDinero = 0;
+    tablaBody.innerHTML = '';
 
 Object.entries(datos).forEach(([key, v]) => {
-  const idVenta = key; // ✅ solo una vez
+    const idVenta = key;
+    const entregado = v.entregado === true; // seguro booleano
+    const botonEntregaColor = entregado ? '#16a34a' : '#ef4444'; // verde / rojo
+    const botonEntregaLabel = entregado ? 'Entregado' : 'No entregado';
 
 
 const fila = `
@@ -972,18 +983,23 @@ const fila = `
     <td>${v.cantidad}</td>
     <td>$${v.precio}</td>
     <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
-    <td>
-      <button onclick="marcarComoPagado('${idVenta}')" style="background-color: ${v.estatus === 'pagado' ? '#16a34a' : '#facc15'}; color: black; border: none; border-radius: 6px; padding: 4px 8px;">
-        ${v.estatus === 'pagado' ? 'Pagado' : 'Pendiente'}
-      </button>
-    </td>
-  </tr>`;
+<td>
+            <button onclick="marcarComoPagado('${idVenta}')" style="background-color: ${v.estatus === 'pagado' ? '#16a34a' : '#facc15'}; color: black; border: none; border-radius: 6px; padding: 4px 8px;">
+              ${v.estatus === 'pagado' ? 'Pagado' : 'Pendiente'}
+            </button>
+          </td>
+          <td>
+            <button onclick="toggleEntrega('${idVenta}', ${entregado})" style="background-color: ${botonEntregaColor}; color: white; border: none; border-radius: 6px; padding: 4px 8px;">
+              ${botonEntregaLabel}
+            </button>
+          </td>
+        </tr>
+      `;
 
       tablaBody.innerHTML += fila;
 
-      // ✅ Sumamos totales dentro del loop
-      totalProductos += v.cantidad;
-      totalDinero += v.cantidad * v.precio;
+totalProductos += Number(v.cantidad) || 0;
+      totalDinero += (Number(v.cantidad) || 0) * (Number(v.precio) || 0);
     });
 
     document.getElementById('totalProductosVendidos').textContent = totalProductos;
@@ -1036,37 +1052,62 @@ function filtrarPorFechas() {
 
 
     function cargarHistorialVentas() {
-  const tablaBody = document.getElementById('tablaHistorialBody');
-  tablaBody.innerHTML = ''; // limpiar tabla
+const tablaBody = document.getElementById('tablaHistorialBody');
+  tablaBody.innerHTML = ''; // limpiar antes de cargar
+
+  document.getElementById('historialVentas').style.display = 'block';
 
   const ventasRef = firebaseRef(firebaseDB, 'historialVentas');
   firebaseOnValue(ventasRef, snapshot => {
     const datos = snapshot.val();
-    if (!datos) return;
+    if (!datos) {
+      tablaBody.innerHTML = '<tr><td colspan="10">No hay ventas registradas.</td></tr>';
+      document.getElementById('totalProductosVendidos').textContent = 0;
+      document.getElementById('dineroIngresado').textContent = '0.00';
+      return;
+    }
 
-Object.entries(datos).forEach(([key, v]) => {
-  const idVenta = key; // ✅ solo una vez
+    let totalProductos = 0;
+    let totalDinero = 0;
+    tablaBody.innerHTML = '';
 
+    Object.entries(datos).forEach(([key, v]) => {
+      const idVenta = key;
+      const entregado = v.entregado === true; // seguro booleano
+      const botonEntregaColor = entregado ? '#16a34a' : '#ef4444'; // verde / rojo
+      const botonEntregaLabel = entregado ? 'Entregado' : 'No entregado';
 
-const fila = `
-  <tr>
-    <td>${v.fecha}</td>
-    <td>${v.cliente}</td>
-    <td>${v.celular}</td>
-    <td>${v.metodo}</td>
-    <td>${v.producto}</td>
-    <td>${v.cantidad}</td>
-    <td>$${v.precio}</td>
-    <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
-    <td>
-      <button onclick="marcarComoPagado('${idVenta}')" style="background-color: ${v.estatus === 'pagado' ? '#16a34a' : '#facc15'}; color: black; border: none; border-radius: 6px; padding: 4px 8px;">
-        ${v.estatus === 'pagado' ? 'Pagado' : 'Pendiente'}
-      </button>
-    </td>
-  </tr>`;
+      const fila = `
+        <tr>
+          <td>${v.fecha}</td>
+          <td>${v.cliente}</td>
+          <td>${v.celular}</td>
+          <td>${v.metodo}</td>
+          <td>${v.producto}</td>
+          <td>${v.cantidad}</td>
+          <td>$${v.precio}</td>
+          <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
+          <td>
+            <button onclick="marcarComoPagado('${idVenta}')" style="background-color: ${v.estatus === 'pagado' ? '#16a34a' : '#facc15'}; color: black; border: none; border-radius: 6px; padding: 4px 8px;">
+              ${v.estatus === 'pagado' ? 'Pagado' : 'Pendiente'}
+            </button>
+          </td>
+          <td>
+            <button onclick="toggleEntrega('${idVenta}', ${entregado})" style="background-color: ${botonEntregaColor}; color: white; border: none; border-radius: 6px; padding: 4px 8px;">
+              ${botonEntregaLabel}
+            </button>
+          </td>
+        </tr>
+      `;
 
       tablaBody.innerHTML += fila;
+
+      totalProductos += Number(v.cantidad) || 0;
+      totalDinero += (Number(v.cantidad) || 0) * (Number(v.precio) || 0);
     });
+
+    document.getElementById('totalProductosVendidos').textContent = totalProductos;
+    document.getElementById('dineroIngresado').textContent = totalDinero.toFixed(2);
   });
 }
 
@@ -1172,6 +1213,26 @@ function cerrarPublicidad() {
   window.firebaseGet = get;
   window.firebaseOnValue = onValue;
   window.firebaseUpdate = update;
+
+function toggleEntrega(idVenta, estadoActual) {
+  const nuevoEstado = !estadoActual;
+  const confirmacion = confirm(nuevoEstado ? "¿Confirmas que el boli ya fue entregado?" : "¿Confirmas marcar como No entregado?");
+  if (!confirmacion) return;
+
+  const ventaRef = firebaseRef(firebaseDB, 'historialVentas/' + idVenta);
+  firebaseUpdate(ventaRef, { entregado: nuevoEstado })
+    .then(() => {
+      alert("Estatus de entrega actualizado");
+      // Si ya tienes un onValue activo (cargarHistorialVentas / mostrarHistorialVentas),
+      // la tabla se actualizará automáticamente. Si no, puedes forzar recarga:
+      // mostrarHistorialVentas();
+    })
+    .catch(err => {
+      console.error('Error al actualizar entrega:', err);
+      alert('Ocurrió un error al actualizar el estatus de entrega.');
+    });
+}
+
 </script>
   <div id="metodoPagoModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
   <div style="background:white; padding:20px; border-radius:10px; text-align:center; max-width:300px;">
@@ -1190,6 +1251,7 @@ function cerrarPublicidad() {
 
 </body>
 </html>
+
 
 
 
