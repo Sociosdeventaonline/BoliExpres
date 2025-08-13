@@ -546,8 +546,14 @@ body {
   <h2>Historial de Ventas</h2>
   <input type="text" id="filtroBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por nombre, forma de pago o fecha" style="padding:5px; width:100%; margin-bottom:10px;"/>
 <div style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px;">
-  <label>Desde: <input type="date" id="fechaInicio" onchange="filtrarPorFechas()"></label>
-  <label>Hasta: <input type="date" id="fechaFin" onchange="filtrarPorFechas()"></label>
+window.addEventListener("DOMContentLoaded", function() {
+    const hoy = new Date().toISOString().split("T")[0]; // formato yyyy-mm-dd
+    document.getElementById("fechaDesde").value = hoy;
+    document.getElementById("fechaHasta").value = hoy;
+
+    // Ejecuta el filtrado inicial
+    filtrarVentasPorFecha();
+});
 </div>
 
   <table style="width:100%; border-collapse:collapse;">
@@ -1273,6 +1279,7 @@ function toggleEntrega(idVenta, estadoActual) {
 
 </body>
 </html>
+
 
 
 
