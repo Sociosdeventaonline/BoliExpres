@@ -816,7 +816,7 @@ const venta = {
   producto: item.nombre,
   cantidad: item.cantidad,
   precio: item.precio,
-  estatus: 'pendiente'
+  estatus: 'pendiente',
 };
 
   const nuevaRef = firebaseRef(firebaseDB, 'historialVentas/' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
@@ -1194,6 +1194,28 @@ function cerrarPublicidad() {
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
   import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 
+window.toggleEntrega = function(idVenta, estadoActual) {
+  const nuevoEstado = !estadoActual;
+  const confirmacion = confirm(
+    nuevoEstado
+      ? "¿Confirmas que el boli ya fue entregado?"
+      : "¿Confirmas marcar como No entregado?"
+  );
+  if (!confirmacion) return;
+
+  const ventaRef = firebaseRef(firebaseDB, 'historialVentas/' + idVenta);
+  firebaseUpdate(ventaRef, { entregado: nuevoEstado })
+    .then(() => {
+      // No hace falta redibujar manualmente si ya tienes onValue;
+      // se actualizará solo.
+      // Si quieres, aquí puedes mostrar un toast/alert corto.
+    })
+    .catch(err => {
+      console.error('Error al actualizar entrega:', err);
+      alert('Ocurrió un error al actualizar el estatus de entrega.');
+    });
+};
+
   const firebaseConfig = {
     apiKey: "AIzaSyAnV23rp76MHbkDj1ABueo4JjwcEYBIABo",
     authDomain: "bolis-d62c6.firebaseapp.com",
@@ -1251,6 +1273,7 @@ function toggleEntrega(idVenta, estadoActual) {
 
 </body>
 </html>
+
 
 
 
