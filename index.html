@@ -801,10 +801,6 @@ alert("Perfecto, tu pedido ha sido registrado con pago en efectivo.");
 const urlVendedor = `whatsapp://send?phone=529993526788&text=${encodeURIComponent(mensajeCliente)}`;
 window.open(urlVendedor, '_blank');
 
-// WhatsApp para administrador
-const urlAdmin = `whatsapp://send?phone=529996102058&text=${encodeURIComponent(mensajeAdmin)}`;
-window.open(urlAdmin, '_blank');
-
 
 // Registrar venta en Firebase
 carrito.forEach(item => {
@@ -1273,6 +1269,7 @@ function toggleEntrega(idVenta, estadoActual) {
 
 </body>
 </html>
+
 
 
 
