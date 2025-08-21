@@ -547,8 +547,14 @@ body {
   <h2>Historial de Ventas</h2>
   <input type="text" id="filtroBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por nombre, forma de pago o fecha" style="padding:5px; width:100%; margin-bottom:10px;"/>
 <div style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px;">
-  <label>Desde: <input type="date" id="fechaInicio" onchange="filtrarPorFechas()"></label>
-  <label>Hasta: <input type="date" id="fechaFin" onchange="filtrarPorFechas()"></label>
+<label>Desde:
+  <input type="date" id="fechaInicio"
+         oninput="filtrarPorFechas()" onchange="filtrarPorFechas()">
+</label>
+<label>Hasta:
+  <input type="date" id="fechaFin"
+         oninput="filtrarPorFechas()" onchange="filtrarPorFechas()">
+</label>
 </div>
 
   <table style="width:100%; border-collapse:collapse;">
@@ -993,9 +999,13 @@ function filtrarHistorial() {
 
 
 function filtrarPorFechas() {
-  // El usuario tocó fechas: desactiva el modo "solo hoy"
-  soloHoyPorDefecto = false;
-  // Reconstruye la tabla trayendo los datos de Firebase con el rango actual
+  const inicio = document.getElementById('fechaInicio').value;
+  const fin    = document.getElementById('fechaFin').value;
+
+  // Si no hay filtros, volvemos al modo "solo hoy"
+  soloHoyPorDefecto = (!inicio && !fin);
+
+  // Reconstruye la tabla y recalcula totales
   cargarHistorialVentas();
 }
 
@@ -1227,6 +1237,7 @@ window.toggleEntrega = function(idVenta, estadoActual) {
 
 </body>
 </html>
+
 
 
 
