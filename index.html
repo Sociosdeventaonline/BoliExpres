@@ -577,6 +577,30 @@ body {
 
 
   <script>
+
+<script>
+// === NUEVO: control por defecto "solo hoy" ===
+let soloHoyPorDefecto = true;
+
+function hoyYYYYMMDD() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+// Convierte "dd/mm/aaaa, hh:mm:ss" a "YYYY-MM-DD"
+function fechaTextoAISO(fechaTexto) {
+  // Ej: "21/08/2025, 15:12:33"
+  if (!fechaTexto) return '';
+  const partes = fechaTexto.split(',');
+  const soloFecha = partes[0]?.trim() || '';
+  const [dd, mm, yyyy] = soloFecha.split('/').map(s => s.trim());
+  if (!dd || !mm || !yyyy) return '';
+  const dd2 = dd.padStart(2, '0');
+  const mm2 = mm.padStart(2, '0');
+  return `${yyyy}-${mm2}-${dd2}`;
+}
+
+
+
 const sabores = [
   { nombre: 'Boli de Fresa', imagen: 'fresa_con_crema.png' },
   { nombre: 'Boli de Mango con Chamoy', imagen: 'mango_con_chamoy.png' },
@@ -942,11 +966,19 @@ function guardarInventario() {
       if (login.style.display === 'block') login.scrollIntoView();
     }
 
+<script>
 function mostrarHistorialVentas() {
   const tablaBody = document.getElementById('tablaHistorialBody');
-  tablaBody.innerHTML = ''; // limpiar antes de cargar
+  tablaBody.innerHTML = ''; // limpiar
 
   document.getElementById('historialVentas').style.display = 'block';
+
+  // Si el usuario no ha tocado fechas, setear a hoy (solo visual)
+  if (soloHoyPorDefecto) {
+    const hoy = hoyYYYYMMDD();
+    document.getElementById('fechaInicio').value = hoy;
+    document.getElementById('fechaFin').value = hoy;
+  }
 
   const ventasRef = firebaseRef(firebaseDB, 'historialVentas');
   firebaseOnValue(ventasRef, snapshot => {
@@ -958,28 +990,41 @@ function mostrarHistorialVentas() {
       return;
     }
 
+    const inicio = document.getElementById('fechaInicio').value || (soloHoyPorDefecto ? hoyYYYYMMDD() : '');
+    const fin = document.getElementById('fechaFin').value || (soloHoyPorDefecto ? hoyYYYYMMDD() : '');
+
     let totalProductos = 0;
     let totalDinero = 0;
     tablaBody.innerHTML = '';
 
-Object.entries(datos).forEach(([key, v]) => {
-    const idVenta = key;
-    const entregado = v.entregado === true; // seguro booleano
-    const botonEntregaColor = entregado ? '#16a34a' : '#ef4444'; // verde / rojo
-    const botonEntregaLabel = entregado ? 'Entregado' : 'No entregado';
+    Object.entries(datos).forEach(([key, v]) => {
+      const idVenta = key;
+      const fechaISO = fechaTextoAISO(v.fecha);
 
+      // Si estamos en modo "solo hoy por defecto", o si hay rango marcado, filtramos
+      const usarFiltro = soloHoyPorDefecto || inicio || fin;
+      if (usarFiltro) {
+        const dentro =
+          (!inicio || fechaISO >= inicio) &&
+          (!fin || fechaISO <= fin);
+        if (!dentro) return; // no pintes esta fila
+      }
 
-const fila = `
-  <tr>
-    <td>${v.fecha}</td>
-    <td>${v.cliente}</td>
-    <td>${v.celular}</td>
-    <td>${v.metodo}</td>
-    <td>${v.producto}</td>
-    <td>${v.cantidad}</td>
-    <td>$${v.precio}</td>
-    <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
-<td>
+      const entregado = v.entregado === true;
+      const botonEntregaColor = entregado ? '#16a34a' : '#ef4444';
+      const botonEntregaLabel = entregado ? 'Entregado' : 'No entregado';
+
+      const fila = `
+        <tr>
+          <td>${v.fecha}</td>
+          <td>${v.cliente || ''}</td>
+          <td>${v.celular || ''}</td>
+          <td>${v.metodo || ''}</td>
+          <td>${v.producto || ''}</td>
+          <td>${v.cantidad || 0}</td>
+          <td>$${v.precio || 0}</td>
+          <td>$${(((+v.precio) || 0) * ((+v.cantidad) || 0)).toFixed(2)}</td>
+          <td>
             <button onclick="marcarComoPagado('${idVenta}')" style="background-color: ${v.estatus === 'pagado' ? '#16a34a' : '#facc15'}; color: black; border: none; border-radius: 6px; padding: 4px 8px;">
               ${v.estatus === 'pagado' ? 'Pagado' : 'Pendiente'}
             </button>
@@ -991,10 +1036,9 @@ const fila = `
           </td>
         </tr>
       `;
-
       tablaBody.innerHTML += fila;
 
-totalProductos += Number(v.cantidad) || 0;
+      totalProductos += Number(v.cantidad) || 0;
       totalDinero += (Number(v.cantidad) || 0) * (Number(v.precio) || 0);
     });
 
@@ -1002,6 +1046,7 @@ totalProductos += Number(v.cantidad) || 0;
     document.getElementById('dineroIngresado').textContent = totalDinero.toFixed(2);
   });
 }
+</script>
 
 
 function filtrarHistorial() {
@@ -1013,7 +1058,11 @@ function filtrarHistorial() {
   });
 }
 
+<script>
 function filtrarPorFechas() {
+  // Si el usuario toca el filtro, ya no es "solo hoy por defecto"
+  soloHoyPorDefecto = false;
+
   const inicio = document.getElementById('fechaInicio').value;
   const fin = document.getElementById('fechaFin').value;
   const filas = document.querySelectorAll('#tablaHistorialBody tr');
@@ -1022,19 +1071,17 @@ function filtrarPorFechas() {
   let totalDinero = 0;
 
   filas.forEach(fila => {
-    const fechaTexto = fila.children[0].textContent; // Columna de fecha
-    const [dia, mes, anioYhora] = fechaTexto.split('/');
-    const [anio] = anioYhora.split(','); // ignoramos la hora
-    const fechaFormateada = `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+    const fechaTexto = fila.children[0].textContent; // Columna fecha
+    const fechaISO = fechaTextoAISO(fechaTexto);
 
     const dentroRango =
-      (!inicio || fechaFormateada >= inicio) &&
-      (!fin || fechaFormateada <= fin);
+      (!inicio || fechaISO >= inicio) &&
+      (!fin || fechaISO <= fin);
 
     if (dentroRango) {
       fila.style.display = '';
-      const cantidad = parseInt(fila.children[5].textContent);
-      const subtotal = parseFloat(fila.children[7].textContent.replace('$', ''));
+      const cantidad = parseInt(fila.children[5].textContent) || 0;
+      const subtotal = parseFloat(fila.children[7].textContent.replace('$', '')) || 0;
       totalProductos += cantidad;
       totalDinero += subtotal;
     } else {
@@ -1045,13 +1092,22 @@ function filtrarPorFechas() {
   document.getElementById('totalProductosVendidos').textContent = totalProductos;
   document.getElementById('dineroIngresado').textContent = totalDinero.toFixed(2);
 }
+</script>
 
 
-    function cargarHistorialVentas() {
-const tablaBody = document.getElementById('tablaHistorialBody');
-  tablaBody.innerHTML = ''; // limpiar antes de cargar
+
+    <script>
+function cargarHistorialVentas() {
+  const tablaBody = document.getElementById('tablaHistorialBody');
+  tablaBody.innerHTML = ''; // limpiar
 
   document.getElementById('historialVentas').style.display = 'block';
+
+  if (soloHoyPorDefecto) {
+    const hoy = hoyYYYYMMDD();
+    document.getElementById('fechaInicio').value = hoy;
+    document.getElementById('fechaFin').value = hoy;
+  }
 
   const ventasRef = firebaseRef(firebaseDB, 'historialVentas');
   firebaseOnValue(ventasRef, snapshot => {
@@ -1063,26 +1119,39 @@ const tablaBody = document.getElementById('tablaHistorialBody');
       return;
     }
 
+    const inicio = document.getElementById('fechaInicio').value || (soloHoyPorDefecto ? hoyYYYYMMDD() : '');
+    const fin = document.getElementById('fechaFin').value || (soloHoyPorDefecto ? hoyYYYYMMDD() : '');
+
     let totalProductos = 0;
     let totalDinero = 0;
     tablaBody.innerHTML = '';
 
     Object.entries(datos).forEach(([key, v]) => {
       const idVenta = key;
-      const entregado = v.entregado === true; // seguro booleano
-      const botonEntregaColor = entregado ? '#16a34a' : '#ef4444'; // verde / rojo
+      const fechaISO = fechaTextoAISO(v.fecha);
+
+      const usarFiltro = soloHoyPorDefecto || inicio || fin;
+      if (usarFiltro) {
+        const dentro =
+          (!inicio || fechaISO >= inicio) &&
+          (!fin || fechaISO <= fin);
+        if (!dentro) return;
+      }
+
+      const entregado = v.entregado === true;
+      const botonEntregaColor = entregado ? '#16a34a' : '#ef4444';
       const botonEntregaLabel = entregado ? 'Entregado' : 'No entregado';
 
       const fila = `
         <tr>
           <td>${v.fecha}</td>
-          <td>${v.cliente}</td>
-          <td>${v.celular}</td>
-          <td>${v.metodo}</td>
-          <td>${v.producto}</td>
-          <td>${v.cantidad}</td>
-          <td>$${v.precio}</td>
-          <td>$${(v.precio * v.cantidad).toFixed(2)}</td>
+          <td>${v.cliente || ''}</td>
+          <td>${v.celular || ''}</td>
+          <td>${v.metodo || ''}</td>
+          <td>${v.producto || ''}</td>
+          <td>${v.cantidad || 0}</td>
+          <td>$${v.precio || 0}</td>
+          <td>$${(((+v.precio) || 0) * ((+v.cantidad) || 0)).toFixed(2)}</td>
           <td>
             <button onclick="marcarComoPagado('${idVenta}')" style="background-color: ${v.estatus === 'pagado' ? '#16a34a' : '#facc15'}; color: black; border: none; border-radius: 6px; padding: 4px 8px;">
               ${v.estatus === 'pagado' ? 'Pagado' : 'Pendiente'}
@@ -1095,7 +1164,6 @@ const tablaBody = document.getElementById('tablaHistorialBody');
           </td>
         </tr>
       `;
-
       tablaBody.innerHTML += fila;
 
       totalProductos += Number(v.cantidad) || 0;
@@ -1106,6 +1174,8 @@ const tablaBody = document.getElementById('tablaHistorialBody');
     document.getElementById('dineroIngresado').textContent = totalDinero.toFixed(2);
   });
 }
+</script>
+
 
 function marcarComoPagado(idVenta) {
   const confirmacion = confirm("¿Confirmas que esta venta ya fue pagada?");
@@ -1124,10 +1194,6 @@ function marcarComoPagado(idVenta) {
 }
 
 window.addEventListener('load', () => {
-  const hoy = new Date().toISOString().split('T')[0];
-  document.getElementById('fechaInicio').value = hoy;
-  document.getElementById('fechaFin').value = hoy;
-  filtrarPorFechas(); // Carga inicial con la fecha actual
 mostrarPopupPublicidad();
 
 });
@@ -1269,5 +1335,6 @@ function toggleEntrega(idVenta, estadoActual) {
 
 </body>
 </html>
+
 
 
